@@ -20,6 +20,7 @@ defmodule DemoWeb.Router do
 
     get "/", PageController, :index
 
+    live "/arkanoid", ArkanoidLive
     live "/thermostat", ThermostatLive
     get "/snake", PageController, :snake
     live "/search", SearchLive

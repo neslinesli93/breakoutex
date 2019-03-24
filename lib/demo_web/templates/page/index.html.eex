@@ -7,6 +7,7 @@
   <article class="column">
     <h4>LiveView Examples</h4>
     <ul>
+      <li><%= link "Arkanoid", to: Routes.live_path(@conn, DemoWeb.ArkanoidLive) %></li>
       <li><%= link "Thermostat", to: Routes.live_path(@conn, DemoWeb.ThermostatLive) %></li>
       <li><%= link "Snake", to: Routes.page_path(@conn, :snake) %></li>
       <li><%= link "Search with Autocomplete", to: Routes.live_path(@conn, DemoWeb.SearchLive) %></li>

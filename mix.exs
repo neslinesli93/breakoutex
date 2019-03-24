@@ -42,7 +42,7 @@ defmodule Demo.Mixfile do
       {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.13", github: "phoenixframework/phoenix_html", override: true},
-      {:phoenix_live_reload, "~> 1.0", only: :dev},
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:cowboy, "~> 2.0"},

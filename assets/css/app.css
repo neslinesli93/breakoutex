@@ -5,6 +5,7 @@
 @import "./pacman.css";
 @import "./snake.css";
 @import "./thermostat.css";
+@import "./arkanoid.css";
 
 pre{
   padding: 1em;
