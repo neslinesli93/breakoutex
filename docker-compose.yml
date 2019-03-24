@@ -1,0 +1,33 @@
+version: '3.5'
+
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  app:
+    build: .
+    expose:
+      - "4000"
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    environment:
+      - PORT=4000
+      - MIX_ENV=dev
+    volumes:
+      - .:/home/app
+    working_dir: /home/app
+
+  db:
+    image: "postgres:10"
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: demo_dev

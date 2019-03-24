@@ -1,0 +1,72 @@
+/* This file is for your main application css. */
+
+@import "./phoenix.css";
+@import "./live_view.css";
+@import "./pacman.css";
+@import "./snake.css";
+@import "./thermostat.css";
+
+pre{
+  padding: 1em;
+}
+.animated-sin-wave {
+  position: relative;
+  height: 150px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.animated-sin-wave > .bar {
+  position: absolute;
+  height: 100%;
+  border-radius: 50%;
+  max-width:10px;
+}
+
+.animated-sin-wave-description {
+  width:100%;
+  text-align:center;
+  font-size:0.8em;
+  color:#747678;
+  padding: 2em
+}
+
+.container.rainbow {
+  max-width: 100%;
+  text-align: center;
+}
+
+[data-phx-view]{
+  padding: 1em;
+}
+
+
+
+
+.datalist-polyfill {
+	list-style: none;
+	display: none;
+	background: white;
+	box-shadow: 0 2px 2px #999;
+	position: absolute;
+	left: 0;
+	top: 0;
+	margin: 0;
+	padding: 0;
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+.datalist-polyfill:empty {
+  display: none !important;
+}
+
+.datalist-polyfill > li {
+  padding: 3px;
+  font: 13px "Lucida Grande", Sans-Serif;
+}
+
+.datalist-polyfill__active {
+  background: #3875d7;
+  color: white;
+}
