@@ -4,8 +4,39 @@ html {
   overflow-x:hidden;
 }
 
-.game-container .block.platform {
+/* TODO: Copy stuff from snake css */
+
+.game-container .block.paddle {
   background: gray;
+}
+
+.game-container .block.ball {
+  background: black;
+  border-radius: 50%;
+}
+
+.game-container .block.obstacle {
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px;
+}
+
+.game-container .block.block_head {
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px 0 1px 1px;
+}
+
+.game-container .block.block_body {
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px 0 1px 0;
+}
+
+.game-container .block.block_tail {
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px 1px 1px 0;
 }
 
 

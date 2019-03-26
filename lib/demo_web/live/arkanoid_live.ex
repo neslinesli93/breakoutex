@@ -1,35 +1,33 @@
 defmodule DemoWeb.ArkanoidLive do
   use Phoenix.LiveView
 
-  @tick 100
-  @width 10
+  @tick 60
+  @width 20
 
   @blocks_colors ~w(r b g o p y)
   @block_length 3
 
-  # x coordinate of the left corner of the platform
-  @platform_x 10
-  @platform_y 15
-  @platform_length 5
+  # x coordinate of the left corner of the paddle
+  @paddle_x 10
+  @paddle_y 15
+  @paddle_length 5
 
-  """
-  Syntax:
-  - X are the walls
-  - D is the floor
-  - r, b, g, o, p, y are the colors of the different blocks
-  """
+  @ball_speed 0.5
 
-  # TODO: Remove S and B
+  # Syntax:
+  # - X are the walls
+  # - D is the floor
+  # - r, b, g, o, p, y are the colors of the different blocks
   @board [
     ~w(X X X X X X X X X X X X X X X X X X X X X X X X X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-    ~w(X 0 0 0 r r r r r r r r r r r r r r r r r r 0 0 X),
-    ~w(X 0 0 0 b b b b b b b b b b b b b b b b b b 0 0 X),
-    ~w(X 0 0 0 g g g g g g g g g g g g g g g g g g 0 0 X),
-    ~w(X 0 0 0 o o o o o o o o o o o o o o o o o o 0 0 X),
-    ~w(X 0 0 0 p p p p p p p p p p p p p p p p p p 0 0 X),
-    ~w(X 0 0 0 y y y y y y y y y y y y y y y y y y 0 0 X),
+    ~w(X 0 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 0 0 X),
+    ~w(X 0 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 0 0 X),
+    ~w(X 0 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 0 0 X),
+    ~w(X 0 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 0 0 X),
+    ~w(X 0 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 0 0 X),
+    ~w(X 0 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
@@ -47,20 +45,35 @@ defmodule DemoWeb.ArkanoidLive do
   def render(assigns) do
     ~L"""
     <div class="game-container" phx-keydown="keydown" phx-target="window">
-      <%= for x <- @platform do %>
-        <div class="block platform"
-            style="left: <%= x_coord(x, @width) %>px;
-                  top: <%= y_coord(@platform_y, @width) %>px;
-                  width: <%= @width %>px;
-                  height: <%= @width %>px;
-        "></div>
-      <% end %>
-      <%= for {_, block} <- @blocks, block.type !== :empty do %>
+      <div class="block ball"
+          style="left: <%= x_coord(@x, @width) %>px;
+                top: <%= y_coord(@y, @width) %>px;
+                width: <%= @ball_width %>px;
+                height: <%= @ball_width %>px;
+      "></div>
+
+      <div class="block paddle"
+          style="left: <%= x_coord(Enum.at(@paddle, 0), @width) %>px;
+            top: <%= y_coord(@paddle_y, @width) %>px;
+            width: <%= @width * @paddle_length %>px;
+            height: <%= @width %>px;
+      "></div>
+
+      <%= for block <- @blocks, block.type in [:wall, :floor] do %>
         <div class="block <%= block.type %>"
             style="left: <%= block.x %>px;
                     top: <%= block.y %>px;
                     width: <%= block.width %>px;
-                    height: <%= block.width %>px;
+                    height: <%= block.height %>px; %>;
+        "></div>
+      <% end %>
+
+      <%= for block <- @obstacles, block.visible == true do %>
+        <div class="block <%= block.type %>"
+            style="left: <%= block.x %>px;
+                    top: <%= block.y %>px;
+                    width: <%= block.width %>px;
+                    height: <%= block.height %>px;
                     background: <%= Map.get(block, :color, "") %>;
         "></div>
       <% end %>
@@ -68,26 +81,29 @@ defmodule DemoWeb.ArkanoidLive do
     """
   end
 
+  # TODO: platform is useless as an array, we can remove it and only keep the head
   def mount(_session, socket) do
     props = %{
       game_state: :wait,
       width: @width,
       tick: @tick,
-      platform: [],
-      platform_y: @platform_y,
-      # ball info (initially placed at the middle of the platform, one row above)
-      heading: :stationary,
-      row: 12,
-      col: 14,
-      x: nil,
-      y: nil
+      paddle: [],
+      paddle_y: @paddle_y,
+      paddle_length: @paddle_length,
+      # ball info (initially placed at the middle of the paddle, one row above)
+      x: 12,
+      y: 14,
+      dx: 0,
+      dy: 0,
+      ball_width: @width / 1.2
     }
 
     socket =
       socket
       |> assign(props)
       |> build_board()
-      |> build_platform()
+      |> build_obstacles()
+      |> build_paddle()
       |> advance_ball()
 
     if connected?(socket) do
@@ -98,55 +114,23 @@ defmodule DemoWeb.ArkanoidLive do
   end
 
   def handle_info(:tick, socket) do
-    # new_socket =
-    #   socket
-    #   |> game_loop()
-    #   |> schedule_tick()
+    new_socket =
+      socket
+      |> game_loop()
+      |> schedule_tick()
 
-    # {:noreply, new_socket}
-
-    {:noreply, socket}
+    {:noreply, new_socket}
   end
 
   def handle_event("keydown", key, socket) do
-    IO.inspect("received keydown event")
     {:noreply, on_input(socket, key)}
   end
-
-  # The key " " corresponds to spacebar
-  defp on_input(%{assigns: %{game_state: :wait}} = socket, " "), do: start_game(socket)
-  defp on_input(socket, key) when key in ["ArrowLeft", "a", "A"], do: move_plat(socket, :left)
-  defp on_input(socket, key) when key in ["ArrowRight", "d", "D"], do: move_plat(socket, :right)
-  defp on_input(socket, _), do: socket
-
-  defp start_game(socket) do
-    heading = Enum.random([:left, :right])
-    # TODO: Start moving the ball on the given direction using advance_ball
-
-    socket
-  end
-
-  defp move_plat(socket, heading) do
-    update(socket, :platform, &platform_position(&1, heading))
-  end
-
-  # Don't go across boundaries with platform
-  defp platform_position([val | _tail] = platform, :left) when val - 1 >= 1 do
-    Enum.map(platform, &(&1 - 1))
-  end
-
-  defp platform_position([val | _tail] = platform, :right) do
-    case val + @platform_length < @board_cols - 1 do
-      true -> Enum.map(platform, &(&1 + 1))
-      false -> platform
-    end
-  end
-
-  defp platform_position(platform, _), do: platform
 
   def game_loop(socket) do
     socket
     |> advance_ball()
+    |> obstacle_collision()
+    |> paddle_collision()
   end
 
   defp schedule_tick(socket) do
@@ -154,87 +138,153 @@ defmodule DemoWeb.ArkanoidLive do
     socket
   end
 
-  defp build_platform(socket) do
-    platform =
-      @platform_x..(@platform_x + @platform_length - 1)
-      |> Enum.to_list()
+  defp advance_ball(socket) do
+    %{x: x, y: y, dx: dx, dy: dy} = socket.assigns
 
-    assign(socket, :platform, platform)
+    new_dx = ball_horizontal(x, dx)
+    new_dy = ball_vertical(y, dy)
+
+    socket
+    |> assign(:x, x + new_dx)
+    |> assign(:y, y + new_dy)
+    |> assign(:dx, new_dx)
+    |> assign(:dy, new_dy)
   end
 
-  defp x_coord(x, width), do: x * width
-  defp y_coord(y, width), do: y * width
+  defp ball_horizontal(x, dx) when x + dx >= @board_cols - 1, do: -dx
+  defp ball_horizontal(x, dx) when x + dx < 1, do: -dx
+  defp ball_horizontal(_x, dx), do: dx
+
+  defp ball_vertical(y, dy) when y + dy >= @board_rows - 1, do: -dy
+  defp ball_vertical(y, dy) when y + dy < 1, do: -dy
+  defp ball_vertical(_y, dy), do: dy
+
+  defp obstacle_collision(%{assigns: %{obstacles: obstacles, width: width, dy: dy}} = socket) do
+    x = x_coord(socket.assigns.x, width)
+    y = x_coord(socket.assigns.y, width)
+
+    obstacles
+    |> Enum.find_index(fn
+      %{visible: true} = b ->
+        x > b.x and x < b.x + b.width and y > b.y and y < b.y + b.height
+
+      _ ->
+        false
+    end)
+    |> case do
+      nil ->
+        socket
+
+      index ->
+        socket
+        |> assign(:obstacles, update_in(obstacles, [Access.at(index), :visible], &(!&1)))
+        |> assign(:dy, -dy)
+    end
+  end
+
+  defp paddle_collision(%{assigns: %{x: x, y: y, dx: dx, dy: dy, paddle: paddle}} = socket) do
+    if y + dy >= @paddle_y and (x >= List.first(paddle) and x <= List.last(paddle)) do
+      assign(socket, :dy, -dy)
+    else
+      socket
+    end
+  end
+
+  defp on_input(socket, " " = _spacebar), do: start_game(socket)
+  defp on_input(socket, key) when key in ["ArrowLeft", "a", "A"], do: move_plat(socket, :left)
+  defp on_input(socket, key) when key in ["ArrowRight", "d", "D"], do: move_plat(socket, :right)
+  defp on_input(socket, _), do: socket
+
+  # Start moving the ball up, in a random horizontal direction
+  defp start_game(%{assigns: %{game_state: state}} = socket) when state in [:wait, :over] do
+    socket
+    |> assign(:dy, -@ball_speed)
+    |> assign(:dx, Enum.random([-@ball_speed, +@ball_speed]))
+    |> assign(:game_state, :playing)
+  end
+
+  defp start_game(socket), do: socket
+
+  defp move_plat(%{assigns: %{game_state: :playing}} = socket, heading),
+    do: update(socket, :paddle, &paddle_position(&1, heading))
+
+  defp move_plat(socket, _), do: socket
+
+  # Don't go across boundaries with paddle
+  defp paddle_position([val | _tail] = paddle, :left) when val - 1 >= 1 do
+    Enum.map(paddle, &(&1 - 1))
+  end
+
+  defp paddle_position([val | _tail] = paddle, :right) do
+    case val + @paddle_length < @board_cols - 1 do
+      true -> Enum.map(paddle, &(&1 + 1))
+      false -> paddle
+    end
+  end
+
+  defp paddle_position(paddle, _), do: paddle
+
+  defp build_paddle(socket) do
+    paddle =
+      @paddle_x..(@paddle_x + @paddle_length - 1)
+      |> Enum.to_list()
+
+    assign(socket, :paddle, paddle)
+  end
 
   defp build_board(socket) do
     width = socket.assigns.width
 
     {_, blocks} =
-      Enum.reduce(@board, {0, %{}}, fn row, {y_idx, acc} ->
+      Enum.reduce(@board, {0, []}, fn row, {y_idx, acc} ->
         {_, blocks} =
           Enum.reduce(row, {0, acc}, fn
             "X", {x_idx, acc} ->
-              {x_idx + 1, Map.put(acc, {y_idx, x_idx}, wall(x_idx, y_idx, width))}
+              {x_idx + 1, [wall(x_idx, y_idx, width) | acc]}
 
             "0", {x_idx, acc} ->
-              {x_idx + 1, Map.put(acc, {y_idx, x_idx}, empty(x_idx, y_idx, width))}
+              {x_idx + 1, [empty(x_idx, y_idx, width) | acc]}
 
             "D", {x_idx, acc} ->
-              {x_idx + 1, Map.put(acc, {y_idx, x_idx}, floor(x_idx, y_idx, width))}
+              {x_idx + 1, [floor(x_idx, y_idx, width) | acc]}
 
             b, {x_idx, acc} when b in @blocks_colors ->
-              {x_idx + 1, Map.put(acc, {y_idx, x_idx}, block(b, x_idx, y_idx, width))}
+              {x_idx + 1, [block(b, x_idx, y_idx, width) | acc]}
           end)
 
         {y_idx + 1, blocks}
       end)
 
-    # IO.inspect(blocks, label: "blocks", limit: :infinity)
-
     assign(socket, :blocks, blocks)
   end
 
   defp wall(x_idx, y_idx, width) do
-    %{type: :wall, x: x_idx * width, y: y_idx * width, width: width}
+    %{type: :wall, x: x_idx * width, y: y_idx * width, width: width, height: width}
   end
 
   defp floor(x_idx, y_idx, width) do
-    %{type: :floor, x: x_idx * width, y: y_idx * width, width: width}
+    %{type: :floor, x: x_idx * width, y: y_idx * width, width: width, height: width}
   end
 
   defp empty(x_idx, y_idx, width) do
-    %{type: :empty, x: x_idx * width, y: y_idx * width, width: width}
+    %{type: :empty, x: x_idx * width, y: y_idx * width, width: width, height: width}
   end
 
-  # ATM, block generation depends both on map size and block size, which are hardcoded
   defp block(color, x_idx, y_idx, width) do
-    case rem(x_idx, @block_length) do
-      1 ->
-        %{
-          type: :block_head,
-          color: get_color(color),
-          x: x_idx * width,
-          y: y_idx * width,
-          width: width
-        }
+    %{
+      type: :obstacle,
+      color: get_color(color),
+      x: x_idx * width,
+      y: y_idx * width,
+      width: width * @block_length,
+      height: width,
+      visible: true
+    }
+  end
 
-      2 ->
-        %{
-          type: :block_body,
-          color: get_color(color),
-          x: x_idx * width,
-          y: y_idx * width,
-          width: width
-        }
-
-      0 ->
-        %{
-          type: :block_tail,
-          color: get_color(color),
-          x: x_idx * width,
-          y: y_idx * width,
-          width: width
-        }
-    end
+  defp build_obstacles(%{assigns: %{blocks: blocks}} = socket) do
+    socket
+    |> assign(:obstacles, Enum.filter(blocks, &(&1.type == :obstacle)))
   end
 
   defp get_color("r"), do: "red"
@@ -244,32 +294,6 @@ defmodule DemoWeb.ArkanoidLive do
   defp get_color("o"), do: "orange"
   defp get_color("p"), do: "purple"
 
-  defp advance_ball(socket) do
-    %{width: width, heading: heading, blocks: blocks} = socket.assigns
-    col_before = socket.assigns.col
-    row_before = socket.assigns.row
-    maybe_row = row(row_before, heading)
-    maybe_col = col(col_before, heading)
-
-    {row, col} =
-      case Map.fetch!(blocks, {maybe_row, maybe_col}).type do
-        :wall -> {row_before, col_before}
-        :empty -> {maybe_row, maybe_col}
-      end
-
-    socket
-    |> assign(:row, row)
-    |> assign(:col, col)
-    |> assign(:x, col * width)
-    |> assign(:y, row * width)
-  end
-
-  # Basic collision detection
-  defp col(val, :left) when val - 1 >= 1, do: val - 1
-  defp col(val, :right) when val + 1 < @board_cols - 1, do: val + 1
-  defp col(val, _), do: val
-
-  defp row(val, :up) when val - 1 >= 1, do: val - 1
-  defp row(val, :down) when val + 1 < @board_rows - 1, do: val + 1
-  defp row(val, _), do: val
+  defp x_coord(x, width), do: x * width
+  defp y_coord(y, width), do: y * width
 end
