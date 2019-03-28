@@ -1,7 +1,10 @@
 defmodule DemoWeb.ArkanoidLive do
   use Phoenix.LiveView
 
-  @tick 60
+  # See https://codeincomplete.com/posts/collision-detection-in-breakout/ for a detailed explanation
+  # of game mechanics
+
+  @tick 32
   @width 20
 
   @blocks_colors ~w(r b g o p y)
@@ -9,10 +12,11 @@ defmodule DemoWeb.ArkanoidLive do
 
   # x coordinate of the left corner of the paddle
   @paddle_x 10
-  @paddle_y 15
+  @paddle_y 18
   @paddle_length 5
+  @paddle_speed 0.8
 
-  @ball_speed 0.5
+  @ball_speed 0.3
 
   # Syntax:
   # - X are the walls
@@ -28,6 +32,8 @@ defmodule DemoWeb.ArkanoidLive do
     ~w(X 0 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 0 0 X),
     ~w(X 0 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 0 0 X),
     ~w(X 0 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 0 0 X),
+    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+    ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
     ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
@@ -53,7 +59,7 @@ defmodule DemoWeb.ArkanoidLive do
       "></div>
 
       <div class="block paddle"
-          style="left: <%= x_coord(Enum.at(@paddle, 0), @width) %>px;
+          style="left: <%= x_coord(@paddle_x, @width) %>px;
             top: <%= y_coord(@paddle_y, @width) %>px;
             width: <%= @width * @paddle_length %>px;
             height: <%= @width %>px;
@@ -87,12 +93,12 @@ defmodule DemoWeb.ArkanoidLive do
       game_state: :wait,
       width: @width,
       tick: @tick,
-      paddle: [],
+      paddle_x: @paddle_x,
       paddle_y: @paddle_y,
       paddle_length: @paddle_length,
       # ball info (initially placed at the middle of the paddle, one row above)
       x: 12,
-      y: 14,
+      y: 17,
       dx: 0,
       dy: 0,
       ball_width: @width / 1.2
@@ -103,7 +109,6 @@ defmodule DemoWeb.ArkanoidLive do
       |> assign(props)
       |> build_board()
       |> build_obstacles()
-      |> build_paddle()
       |> advance_ball()
 
     if connected?(socket) do
@@ -166,7 +171,7 @@ defmodule DemoWeb.ArkanoidLive do
     obstacles
     |> Enum.find_index(fn
       %{visible: true} = b ->
-        x > b.x and x < b.x + b.width and y > b.y and y < b.y + b.height
+        x > b.x and x < b.x + b.width and y > b.y and y <= b.y + b.height
 
       _ ->
         false
@@ -182,8 +187,8 @@ defmodule DemoWeb.ArkanoidLive do
     end
   end
 
-  defp paddle_collision(%{assigns: %{x: x, y: y, dx: dx, dy: dy, paddle: paddle}} = socket) do
-    if y + dy >= @paddle_y and (x >= List.first(paddle) and x <= List.last(paddle)) do
+  defp paddle_collision(%{assigns: %{x: x, y: y, dx: dx, dy: dy, paddle_x: paddle_x}} = socket) do
+    if y + dy >= @paddle_y and (x >= paddle_x and x <= paddle_x + @paddle_length) do
       assign(socket, :dy, -dy)
     else
       socket
@@ -191,8 +196,15 @@ defmodule DemoWeb.ArkanoidLive do
   end
 
   defp on_input(socket, " " = _spacebar), do: start_game(socket)
-  defp on_input(socket, key) when key in ["ArrowLeft", "a", "A"], do: move_plat(socket, :left)
-  defp on_input(socket, key) when key in ["ArrowRight", "d", "D"], do: move_plat(socket, :right)
+
+  defp on_input(%{assigns: %{game_state: :playing}} = socket, key)
+       when key in ["ArrowLeft", "a", "A"],
+       do: move_paddle(socket, :left)
+
+  defp on_input(%{assigns: %{game_state: :playing}} = socket, key)
+       when key in ["ArrowRight", "d", "D"],
+       do: move_paddle(socket, :right)
+
   defp on_input(socket, _), do: socket
 
   # Start moving the ball up, in a random horizontal direction
@@ -201,36 +213,73 @@ defmodule DemoWeb.ArkanoidLive do
     |> assign(:dy, -@ball_speed)
     |> assign(:dx, Enum.random([-@ball_speed, +@ball_speed]))
     |> assign(:game_state, :playing)
+    |> assign(:tt, get_tt())
   end
 
   defp start_game(socket), do: socket
 
-  defp move_plat(%{assigns: %{game_state: :playing}} = socket, heading),
-    do: update(socket, :paddle, &paddle_position(&1, heading))
+  defp move_paddle(socket, :left) do
+    now = get_tt()
+    tt = socket.assigns.tt
+    paddle_x = socket.assigns.paddle_x
 
-  defp move_plat(socket, _), do: socket
+    dx =
+      case now - tt < 100 do
+        true -> @paddle_speed * 2
+        false -> @paddle_speed
+      end
 
-  # Don't go across boundaries with paddle
-  defp paddle_position([val | _tail] = paddle, :left) when val - 1 >= 1 do
-    Enum.map(paddle, &(&1 - 1))
+    x = max(1, paddle_x - dx)
+
+    socket
+    |> assign(:paddle_x, x)
+    |> assign(:tt, now)
   end
 
-  defp paddle_position([val | _tail] = paddle, :right) do
-    case val + @paddle_length < @board_cols - 1 do
-      true -> Enum.map(paddle, &(&1 + 1))
-      false -> paddle
-    end
+  defp move_paddle(socket, :right) do
+    now = get_tt()
+    tt = socket.assigns.tt
+    paddle_x = socket.assigns.paddle_x
+
+    dx =
+      case now - tt < 100 do
+        true -> @paddle_speed * 2
+        false -> @paddle_speed
+      end
+
+    x = min(paddle_x + dx, @board_cols - @paddle_length - 1)
+
+    socket
+    |> assign(:paddle_x, x)
+    |> assign(:tt, now)
   end
 
-  defp paddle_position(paddle, _), do: paddle
+  # defp move_plat(%{assigns: %{game_state: :playing}} = socket, heading),
+  #   do: update(socket, :paddle, &paddle_position(&1, heading))
 
-  defp build_paddle(socket) do
-    paddle =
-      @paddle_x..(@paddle_x + @paddle_length - 1)
-      |> Enum.to_list()
+  # defp move_plat(socket, _), do: socket
 
-    assign(socket, :paddle, paddle)
-  end
+  # # Don't go across boundaries with paddle
+  # defp paddle_position([val | _tail] = paddle, :left) when val - 1 >= 1 do
+  #   Enum.map(paddle, &(&1 - 1))
+  # end
+
+  # defp paddle_position([val | _tail] = paddle, :right) do
+  #   case val + @paddle_length < @board_cols - 1 do
+  #     true -> Enum.map(paddle, &(&1 + 1))
+  #     false -> paddle
+  #   end
+  # end
+
+  # defp paddle_position(paddle, _), do: paddle
+
+  # defp build_paddle(socket) do
+  #   paddle =
+  #     @paddle_x..(@paddle_x + @paddle_length - 1)
+  #     |> Enum.to_list()
+
+  #   assign(socket, :paddle, paddle)
+  # end
 
   defp build_board(socket) do
     width = socket.assigns.width
@@ -286,6 +335,8 @@ defmodule DemoWeb.ArkanoidLive do
     socket
     |> assign(:obstacles, Enum.filter(blocks, &(&1.type == :obstacle)))
   end
+
+  defp get_tt(), do: :os.system_time(:milli_seconds)
 
   defp get_color("r"), do: "red"
   defp get_color("b"), do: "blue"
