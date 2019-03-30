@@ -19,7 +19,7 @@ defmodule DemoWeb.ArkanoidLive.Config do
       @ball_x 12
       @ball_y 17
       @ball_speed 3
-      @ball_width @width / 1.2
+      @ball_width @width / 1.3
       @ball_radius @ball_width / 2
 
       @left_keys ["ArrowLeft", "a", "A"]

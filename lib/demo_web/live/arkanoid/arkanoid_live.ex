@@ -195,22 +195,46 @@ defmodule DemoWeb.ArkanoidLive do
   defp collision_direction_y(dy, direction) when direction in [:top, :bottom], do: -dy
   defp collision_direction_y(dy, _), do: dy
 
-  # TODO: Improve this by making the ball change direction based on the hit point on the paddle
+  # TODO: Improve this by taking giving top/bottom left/right coords to the paddle
   defp paddle_collision(
-         %{assigns: %{x: x, y: y, dy: dy, width: w, paddle_x: paddle_x, paddle_y: paddle_y}} =
-           socket
+         %{
+           assigns: %{
+             dx: dx,
+             dy: dy,
+             width: w,
+             paddle_x: paddle_x,
+             paddle_y: paddle_y,
+             ball_radius: radius,
+             ball_width: ball_width
+           }
+         } = socket
        ) do
-    if y + dy >= paddle_y and (x >= paddle_x and x <= paddle_x + @paddle_length * w) do
-      socket
-      |> assign(
-        :dx,
-        @ball_speed * (x + 2 * @ball_radius - (paddle_x + paddle_x * @paddle_length / 2)) /
-          (paddle_x * @paddle_length / 2)
-      )
-      |> assign(:dy, -dy)
-    else
-      socket
+    # Use center coordinates
+    x = socket.assigns.x + ball_width / 2
+    y = socket.assigns.y + ball_width / 2
+
+    paddle_rect = %{
+      left: paddle_x,
+      right: paddle_x + @paddle_length * w,
+      top: paddle_y,
+      bottom: paddle_y + w
+    }
+
+    case(Engine.collision_point(x, y, dx, dy, radius, paddle_rect)) do
+      nil ->
+        socket
+
+      %{direction: :top} = point ->
+        socket
+        |> assign(:x, point.x - ball_width / 2)
+        |> assign(:y, point.y - ball_width / 2)
+        |> assign(:dx, ball_dx_after_paddle(point.x - ball_width / 2, paddle_x, w))
+        |> assign(:dy, -dy)
     end
+  end
+
+  defp ball_dx_after_paddle(x, paddle_x, w) do
+    @ball_speed * (x - (paddle_x + @paddle_length * w / 2)) / (@paddle_length * w / 2)
   end
 
   # Handle keydown events
