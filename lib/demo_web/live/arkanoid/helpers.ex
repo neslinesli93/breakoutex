@@ -1,4 +1,6 @@
 defmodule DemoWeb.ArkanoidLive.Helpers do
+  use DemoWeb.ArkanoidLive.Config
+
   @spec get_color(String.t()) :: String.t()
   def get_color("r"), do: "red"
   def get_color("b"), do: "blue"
