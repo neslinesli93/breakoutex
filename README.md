@@ -2,6 +2,17 @@
 
 Boilerplate taken from [here](https://github.com/chrismccord/phoenix_live_view_example)
 
+# TODO
+- [ ] Lose game
+- [ ] Win game
+- [ ] Progressive ball acceleration
+- [ ] CSS of the page
+- [ ] Use coordinates of the center of the ball?
+- [ ] Use coordinates of the center of the paddle?
+- [ ] Transfer the project on a fresh, clean mix one (just like the guy that made the board game)
+- [ ] How to deploy?
+- [ ] Article(s) or tutorial?
+
 # Install
 
 Clone the repo.
