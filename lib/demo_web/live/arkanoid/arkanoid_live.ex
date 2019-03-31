@@ -101,8 +101,8 @@ defmodule DemoWeb.ArkanoidLive do
 
   defp game_loop(%{assigns: %{game_state: :playing}} = socket) do
     socket
-    |> advance_ball()
     |> advance_paddle()
+    |> advance_ball()
     |> brick_collision()
     |> paddle_collision()
   end
@@ -193,7 +193,7 @@ defmodule DemoWeb.ArkanoidLive do
   defp collision_direction_y(dy, direction) when direction in [:top, :bottom], do: -dy
   defp collision_direction_y(dy, _), do: dy
 
-  # TODO: Improve this by taking giving top/bottom left/right coords to the paddle
+  # TODO: Improve this by giving top/bottom left/right coords to the paddle
   defp paddle_collision(
          %{
            assigns: %{
@@ -228,6 +228,13 @@ defmodule DemoWeb.ArkanoidLive do
         |> assign(:y, point.y - ball_width / 2)
         |> assign(:dx, ball_dx_after_paddle(point.x - ball_width / 2, paddle_x, w))
         |> assign(:dy, -dy)
+
+      # This match is only needed for graphical consistency, since the game is already lost at this point
+      point ->
+        socket
+        |> assign(:x, point.x - ball_width / 2)
+        |> assign(:y, point.y - ball_width / 2)
+        |> assign(:dx, -dx)
     end
   end
 
