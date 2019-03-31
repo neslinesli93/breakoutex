@@ -3,12 +3,12 @@
 Boilerplate taken from [here](https://github.com/chrismccord/phoenix_live_view_example)
 
 # TODO
-- [ ] Lose game
+- [x] Lose game
 - [ ] Win game
 - [ ] Progressive ball acceleration
 - [ ] CSS of the page
-- [ ] Use coordinates of the center of the ball?
-- [ ] Use coordinates of the center of the paddle?
+- [x] Use coordinates of the center of the ball?
+- [x] Use coordinates of the center of the paddle?
 - [ ] Refactor everything NOT to use integer matrix coordinates, and instead compute everything inside config file?
 - [ ] Transfer the project on a fresh, clean mix one (just like the guy that made the board game)
 - [ ] How to deploy?

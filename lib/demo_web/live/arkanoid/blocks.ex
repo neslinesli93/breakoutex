@@ -1,4 +1,4 @@
-defmodule DemoWeb.ArkanoidLive.Board do
+defmodule DemoWeb.ArkanoidLive.Blocks do
   use DemoWeb.ArkanoidLive.Config
 
   alias DemoWeb.ArkanoidLive.Helpers
@@ -72,7 +72,7 @@ defmodule DemoWeb.ArkanoidLive.Board do
   defp brick(color, x_idx, y_idx, width, height) do
     %{
       type: :brick,
-      color: Helpers.get_color(color),
+      color: get_color(color),
       width: width * @brick_length,
       height: height,
       id: y_idx * @board_rows + x_idx,
@@ -83,4 +83,11 @@ defmodule DemoWeb.ArkanoidLive.Board do
       bottom: Helpers.coordinate(y_idx, height) + height
     }
   end
+
+  defp get_color("r"), do: "red"
+  defp get_color("b"), do: "blue"
+  defp get_color("g"), do: "green"
+  defp get_color("y"), do: "yellow"
+  defp get_color("o"), do: "orange"
+  defp get_color("p"), do: "purple"
 end

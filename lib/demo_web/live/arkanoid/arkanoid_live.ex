@@ -3,9 +3,7 @@ defmodule DemoWeb.ArkanoidLive do
 
   use DemoWeb.ArkanoidLive.Config
 
-  alias DemoWeb.ArkanoidLive.Helpers
-  alias DemoWeb.ArkanoidLive.Board
-  alias DemoWeb.ArkanoidLive.Engine
+  alias DemoWeb.ArkanoidLive.{Blocks, Engine}
 
   # We use x and y fields for drawing, and since we are using as values in pixels
   # for top/left CSS properties, they refer to the coordinates of the top-left vertex
@@ -51,8 +49,8 @@ defmodule DemoWeb.ArkanoidLive do
     socket =
       socket
       |> assign(state)
-      |> assign(:blocks, Board.build_board(state.unit, state.unit))
-      |> assign(:obstacles, Board.build_obstacles(state.unit, state.unit))
+      |> assign(:blocks, Blocks.build_board(state.unit, state.unit))
+      |> assign(:obstacles, Blocks.build_obstacles(state.unit, state.unit))
 
     if connected?(socket) do
       {:ok, schedule_tick(socket)}
@@ -84,7 +82,8 @@ defmodule DemoWeb.ArkanoidLive do
     |> advance_ball()
     |> obstacles_collision()
     |> paddle_collision()
-    |> check_gameover()
+    |> check_lost_ball()
+    |> check_victory()
   end
 
   defp game_loop(socket), do: socket
@@ -209,16 +208,29 @@ defmodule DemoWeb.ArkanoidLive do
     @ball_speed * (point_x - (paddle_x + @paddle_length * unit / 2)) / (@paddle_length * unit / 2)
   end
 
-  defp check_gameover(%{assigns: %{ball: ball, unit: unit}} = socket) do
+  defp check_lost_ball(%{assigns: %{ball: ball, unit: unit}} = socket) do
     if ball.y >= @board_rows * unit do
       state = initial_state()
 
       socket
       |> assign(state)
-      |> assign(:blocks, Board.build_board(state.unit, state.unit))
-      |> assign(:obstacles, Board.build_obstacles(state.unit, state.unit))
+      |> assign(:blocks, Blocks.build_board(state.unit, state.unit))
+      |> assign(:obstacles, Blocks.build_obstacles(state.unit, state.unit))
     else
       socket
+    end
+  end
+
+  defp check_victory(%{assigns: %{obstacles: obstacles}} = socket) do
+    obstacles
+    |> Enum.filter(&(&1.type == :brick and &1.visible == true))
+    |> Enum.count()
+    |> case do
+      0 ->
+        socket
+
+      _ ->
+        socket
     end
   end
 
@@ -253,7 +265,7 @@ defmodule DemoWeb.ArkanoidLive do
     |> assign(:game_state, :playing)
     |> assign(
       :ball,
-      %{ball | dx: Helpers.starting_dx(), dy: -ball.speed}
+      %{ball | dx: starting_dx(), dy: -ball.speed}
     )
   end
 
@@ -296,4 +308,6 @@ defmodule DemoWeb.ArkanoidLive do
   end
 
   defp do_advance_paddle(socket, :stationary), do: socket
+
+  defp starting_dx(), do: @starting_angles |> Enum.random() |> :math.cos() |> Kernel.*(@ball_speed)
 end
