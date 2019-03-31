@@ -1,6 +1,4 @@
 defmodule DemoWeb.ArkanoidLive.Engine do
-  alias Phoenix.LiveView.Socket
-
   defmodule DemoWeb.ArkanoidLive.Engine.HitPoint do
     defstruct [:x, :y, :direction]
   end

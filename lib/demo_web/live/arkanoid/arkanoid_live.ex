@@ -218,11 +218,10 @@ defmodule DemoWeb.ArkanoidLive do
       0 ->
         state = initial_state()
 
-        socket =
-          socket
-          |> assign(state)
-          |> assign(:blocks, Blocks.build_board(state.unit, state.unit))
-          |> assign(:bricks, Blocks.build_bricks(state.unit, state.unit))
+        socket
+        |> assign(state)
+        |> assign(:blocks, Blocks.build_board(state.unit, state.unit))
+        |> assign(:bricks, Blocks.build_bricks(state.unit, state.unit))
 
       _ ->
         socket
