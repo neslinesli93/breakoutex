@@ -5,6 +5,7 @@ Boilerplate taken from [here](https://github.com/chrismccord/phoenix_live_view_e
 # TODO
 - [x] Lose game
 - [ ] Win game
+- [ ] Function to call in order to receive a new, updated ball instance
 - [ ] Progressive ball acceleration
 - [ ] CSS of the page
 - [x] Use coordinates of the center of the ball?

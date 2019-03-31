@@ -31,13 +31,13 @@ defmodule DemoWeb.ArkanoidLive do
                     height: <%= block.height %>px; %>; "></div>
       <% end %>
 
-      <%= for block <- @obstacles, block.type == :brick and block.visible == true do %>
+      <%= for brick <- @bricks, brick.visible == true do %>
         <div class="block brick"
-            style="left: <%= block.left %>px;
-                    top: <%= block.top %>px;
-                    width: <%= block.width %>px;
-                    height: <%= block.height %>px;
-                    background: <%= Map.fetch!(block, :color) %>; "></div>
+            style="left: <%= brick.left %>px;
+                    top: <%= brick.top %>px;
+                    width: <%= brick.width %>px;
+                    height: <%= brick.height %>px;
+                    background: <%= Map.fetch!(brick, :color) %>; "></div>
       <% end %>
     </div>
     """
@@ -50,7 +50,7 @@ defmodule DemoWeb.ArkanoidLive do
       socket
       |> assign(state)
       |> assign(:blocks, Blocks.build_board(state.unit, state.unit))
-      |> assign(:obstacles, Blocks.build_obstacles(state.unit, state.unit))
+      |> assign(:bricks, Blocks.build_bricks(state.unit, state.unit))
 
     if connected?(socket) do
       {:ok, schedule_tick(socket)}
@@ -80,9 +80,8 @@ defmodule DemoWeb.ArkanoidLive do
     socket
     |> advance_paddle()
     |> advance_ball()
-    |> obstacles_collision()
-    |> paddle_collision()
-    |> check_lost_ball()
+    |> check_collision()
+    |> check_lost()
     |> check_victory()
   end
 
@@ -93,21 +92,36 @@ defmodule DemoWeb.ArkanoidLive do
     socket
   end
 
-  defp advance_ball(%{assigns: %{ball: ball}} = socket) do
+  defp advance_ball(%{assigns: %{ball: ball, unit: unit}} = socket) do
+    new_dx = ball_horizontal(ball.x, ball.dx, ball.radius, unit)
+    new_dy = ball_vertical(ball.y, ball.dy, ball.radius, unit)
+
     socket
     |> assign(
       :ball,
-      ball
-      |> update_in([:x], &(&1 + ball.dx))
-      |> update_in([:left], &(&1 + ball.dx))
-      |> update_in([:y], &(&1 + ball.dy))
-      |> update_in([:top], &(&1 + ball.dy))
+      %{ball | dx: new_dx, dy: new_dy}
+      |> update_in([:x], &(&1 + new_dx))
+      |> update_in([:left], &(&1 + new_dx))
+      |> update_in([:y], &(&1 + new_dy))
+      |> update_in([:top], &(&1 + new_dy))
     )
   end
 
-  # Compute the closest point of intersection, if any, between the ball and obstacles (bricks, walls)
-  defp obstacles_collision(%{assigns: %{obstacles: obstacles, ball: ball}} = socket) do
-    obstacles
+  defp ball_horizontal(x, dx, r, u) when x + dx + r >= (@board_cols - 1) * u, do: -dx
+  defp ball_horizontal(x, dx, r, u) when x + dx - r < u, do: -dx
+  defp ball_horizontal(_x, dx, _r, _u), do: dx
+
+  defp ball_vertical(y, dy, r, u) when y + dy + r > (@board_rows - 1) * u, do: -dy
+  defp ball_vertical(y, dy, r, u) when y + dy - r < u, do: -dy
+  defp ball_vertical(_y, dy, _r, _u), do: dy
+
+  # Compute the closest point of intersection, if any, between the ball and obstacles (bricks and paddle)
+  # and proceeds to
+  defp check_collision(
+         %{assigns: %{bricks: bricks, ball: ball, paddle: paddle, unit: unit}} = socket
+       ) do
+    # Add fields to paddle so that it has the same shape of bricks
+    [paddle | bricks]
     |> Enum.filter(& &1.visible)
     |> Enum.reduce(nil, fn block, acc ->
       case {Engine.collision_point(ball.x, ball.y, ball.dx, ball.dy, ball.radius, block), acc} do
@@ -131,9 +145,26 @@ defmodule DemoWeb.ArkanoidLive do
       nil ->
         socket
 
+      # Match the paddle
+      %{block: %{type: :paddle}, point: %{direction: :top} = point} ->
+        socket
+        |> assign(
+          :ball,
+          %{
+            ball
+            | x: point.x,
+              y: point.y,
+              dx: ball_dx_after_paddle(point.x, paddle.left, unit),
+              dy: -ball.dy,
+              left: point.x - ball.radius,
+              top: point.y - ball.radius
+          }
+        )
+
+      # Match every other brick + the paddle from the sides
       %{block: block, point: point} ->
         socket
-        |> assign(:obstacles, hide_brick(obstacles, block.id))
+        |> assign(:bricks, hide_brick(bricks, block.id))
         |> assign(
           :ball,
           %{
@@ -165,65 +196,23 @@ defmodule DemoWeb.ArkanoidLive do
   defp collision_direction_y(dy, direction) when direction in [:top, :bottom], do: -dy
   defp collision_direction_y(dy, _), do: dy
 
-  defp paddle_collision(%{assigns: %{ball: ball, paddle: paddle, unit: unit}} = socket) do
-    Engine.collision_point(ball.x, ball.y, ball.dx, ball.dy, ball.radius, paddle)
-    |> case do
-      nil ->
-        socket
-
-      %{direction: :top} = point ->
-        socket
-        |> assign(
-          :ball,
-          %{
-            ball
-            | x: point.x,
-              y: point.y,
-              dx: ball_dx_after_paddle(point.x, paddle.left, unit),
-              dy: -ball.dy,
-              left: point.x - ball.radius,
-              top: point.y - ball.radius
-          }
-        )
-
-      # This match is only needed for graphical consistency, since the game is already lost at this point
-      point ->
-        socket
-        |> assign(
-          :ball,
-          %{
-            ball
-            | x: point.x,
-              y: point.y,
-              dx: -ball.dx,
-              left: point.x - ball.radius,
-              top: point.y - ball.radius
-          }
-        )
-    end
-  end
-
   # Make the ball bounce off using the arkanoid style
   defp ball_dx_after_paddle(point_x, paddle_x, unit) do
     @ball_speed * (point_x - (paddle_x + @paddle_length * unit / 2)) / (@paddle_length * unit / 2)
   end
 
-  defp check_lost_ball(%{assigns: %{ball: ball, unit: unit}} = socket) do
-    if ball.y >= @board_rows * unit do
-      state = initial_state()
-
+  defp check_lost(%{assigns: %{ball: ball, unit: unit}} = socket) do
+    if ball.y + ball.dy + ball.radius >= (@board_rows - 1) * unit do
       socket
-      |> assign(state)
-      |> assign(:blocks, Blocks.build_board(state.unit, state.unit))
-      |> assign(:obstacles, Blocks.build_obstacles(state.unit, state.unit))
+      |> assign(initial_state())
     else
       socket
     end
   end
 
-  defp check_victory(%{assigns: %{obstacles: obstacles}} = socket) do
-    obstacles
-    |> Enum.filter(&(&1.type == :brick and &1.visible == true))
+  defp check_victory(%{assigns: %{bricks: bricks}} = socket) do
+    bricks
+    |> Enum.filter(&(&1.visible == true))
     |> Enum.count()
     |> case do
       0 ->

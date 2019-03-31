@@ -28,11 +28,21 @@ defmodule DemoWeb.ArkanoidLive.Blocks do
     blocks
   end
 
-  @spec build_obstacles(number, number) :: [map]
-  def build_obstacles(width, height) do
+  @spec build_bricks(number, number) :: [map]
+  def build_bricks(width, height) do
     width
     |> build_board(height)
-    |> Enum.filter(&(&1.type in [:brick, :wall]))
+    |> Enum.filter(&(&1.type == :brick))
+  end
+
+  defp wall(x_idx, y_idx, width, height) do
+    %{
+      type: :wall,
+      left: Helpers.coordinate(x_idx, width),
+      top: Helpers.coordinate(y_idx, height),
+      width: width,
+      height: height
+    }
   end
 
   defp floor(x_idx, y_idx, width, height) do
@@ -52,20 +62,6 @@ defmodule DemoWeb.ArkanoidLive.Blocks do
       top: Helpers.coordinate(y_idx, height),
       width: width,
       height: height
-    }
-  end
-
-  defp wall(x_idx, y_idx, width, height) do
-    %{
-      type: :wall,
-      width: width,
-      height: height,
-      id: y_idx * @board_rows + x_idx,
-      visible: true,
-      left: Helpers.coordinate(x_idx, width),
-      top: Helpers.coordinate(y_idx, height),
-      right: Helpers.coordinate(x_idx, width) + width,
-      bottom: Helpers.coordinate(y_idx, height) + height
     }
   end
 

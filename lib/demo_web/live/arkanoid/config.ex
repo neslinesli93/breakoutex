@@ -81,6 +81,10 @@ defmodule DemoWeb.ArkanoidLive.Config do
             top: Helpers.coordinate(@paddle_top, @unit),
             right: Helpers.coordinate(@paddle_left + @paddle_length, @unit),
             bottom: Helpers.coordinate(@paddle_top + @paddle_height, @unit),
+            # Add some fields for compatibility with bricks
+            id: "paddle",
+            type: :paddle,
+            visible: true,
             # Misc
             direction: :stationary,
             speed: @paddle_speed,
