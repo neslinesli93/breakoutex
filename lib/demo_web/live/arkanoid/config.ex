@@ -18,7 +18,7 @@ defmodule DemoWeb.ArkanoidLive.Config do
       # TODO: Use the center of the ball
       @ball_x 12
       @ball_y 17
-      @ball_speed 3
+      @ball_speed 4
       @ball_width @width / 1.5
       @ball_radius @ball_width / 2
 
