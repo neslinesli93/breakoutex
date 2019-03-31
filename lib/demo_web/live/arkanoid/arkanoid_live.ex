@@ -216,7 +216,13 @@ defmodule DemoWeb.ArkanoidLive do
     |> Enum.count()
     |> case do
       0 ->
-        socket
+        state = initial_state()
+
+        socket =
+          socket
+          |> assign(state)
+          |> assign(:blocks, Blocks.build_board(state.unit, state.unit))
+          |> assign(:bricks, Blocks.build_bricks(state.unit, state.unit))
 
       _ ->
         socket
