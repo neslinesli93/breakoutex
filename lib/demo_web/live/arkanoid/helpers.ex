@@ -12,4 +12,7 @@ defmodule DemoWeb.ArkanoidLive.Helpers do
 
   @spec y_coord(number, number) :: number
   def y_coord(y, width), do: y * width
+
+  @spec starting_x() :: number
+  def starting_x(), do: @starting_angles |> Enum.random() |> :math.cos() |> Kernel.*(@ball_speed)
 end

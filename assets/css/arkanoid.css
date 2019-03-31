@@ -8,11 +8,13 @@ html {
 
 .game-container .block.paddle {
   background: gray;
+  will-change: left, top;
 }
 
 .game-container .block.ball {
   background: black;
   border-radius: 50%;
+  will-change: left, top;
 }
 
 .game-container .block.brick {

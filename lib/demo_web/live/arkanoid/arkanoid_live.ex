@@ -99,17 +99,15 @@ defmodule DemoWeb.ArkanoidLive do
     {:noreply, on_stop_input(socket, key)}
   end
 
-  def game_loop(socket) do
-    if socket.assigns.game_state == :playing do
-      socket
-      |> advance_ball()
-      |> advance_paddle()
-      |> brick_collision()
-      |> paddle_collision()
-    else
-      socket
-    end
+  defp game_loop(%{assigns: %{game_state: :playing}} = socket) do
+    socket
+    |> advance_ball()
+    |> advance_paddle()
+    |> brick_collision()
+    |> paddle_collision()
   end
+
+  defp game_loop(socket), do: socket
 
   defp schedule_tick(socket) do
     Process.send_after(self(), :tick, socket.assigns.tick)
@@ -266,7 +264,7 @@ defmodule DemoWeb.ArkanoidLive do
        when state in [:wait, :over] do
     socket
     |> assign(:dy, -@ball_speed)
-    |> assign(:dx, starting_x())
+    |> assign(:dx, Helpers.starting_x())
     |> assign(:game_state, :playing)
   end
 
@@ -311,6 +309,4 @@ defmodule DemoWeb.ArkanoidLive do
   end
 
   defp do_advance_paddle(socket, :stationary), do: socket
-
-  defp starting_x(), do: @starting_angles |> Enum.random() |> :math.cos() |> Kernel.*(@ball_speed)
 end
