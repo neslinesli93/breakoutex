@@ -10,15 +10,15 @@ defmodule DemoWeb.ArkanoidLive.Engine do
   # Build the four points used to make two segments, which will be checked to
   # compute the interception (if any) and the direction of it
   @spec collision_point(number, number, number, number, number, map) :: HitPoint.t() | nil
-  def collision_point(x, y, dx, dy, radius, brick) do
+  def collision_point(x, y, dx, dy, radius, block) do
     collision_x =
       case {dx, dy} do
         {dx, _} when dx < 0 ->
           compute_collision(
             {x, y},
             {x + dx, y + dy},
-            {brick.right + radius, brick.top - radius},
-            {brick.right + radius, brick.bottom + radius},
+            {block.right + radius, block.top - radius},
+            {block.right + radius, block.bottom + radius},
             :right
           )
 
@@ -26,8 +26,8 @@ defmodule DemoWeb.ArkanoidLive.Engine do
           compute_collision(
             {x, y},
             {x + dx, y + dy},
-            {brick.left - radius, brick.top - radius},
-            {brick.left - radius, brick.bottom + radius},
+            {block.left - radius, block.top - radius},
+            {block.left - radius, block.bottom + radius},
             :left
           )
 
@@ -43,8 +43,8 @@ defmodule DemoWeb.ArkanoidLive.Engine do
           compute_collision(
             {x, y},
             {x + dx, y + dy},
-            {brick.left - radius, brick.bottom + radius},
-            {brick.right + radius, brick.bottom + radius},
+            {block.left - radius, block.bottom + radius},
+            {block.right + radius, block.bottom + radius},
             :bottom
           )
 
@@ -52,8 +52,8 @@ defmodule DemoWeb.ArkanoidLive.Engine do
           compute_collision(
             {x, y},
             {x + dx, y + dy},
-            {brick.left - radius, brick.top - radius},
-            {brick.right + radius, brick.top - radius},
+            {block.left - radius, block.top - radius},
+            {block.right + radius, block.top - radius},
             :top
           )
 

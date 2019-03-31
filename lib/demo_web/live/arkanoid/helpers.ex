@@ -9,12 +9,11 @@ defmodule DemoWeb.ArkanoidLive.Helpers do
   def get_color("o"), do: "orange"
   def get_color("p"), do: "purple"
 
-  @spec top_left_x(number, number) :: number
-  def top_left_x(x, width), do: x * width
+  # Multiply an integer coordinate for a length, giving
+  # the actual coordinate on a continuous plane
+  @spec coordinate(number, number) :: number
+  def coordinate(x, l), do: x * l
 
-  @spec top_left_y(number, number) :: number
-  def top_left_y(y, height), do: y * height
-
-  @spec starting_x() :: number
-  def starting_x(), do: @starting_angles |> Enum.random() |> :math.cos() |> Kernel.*(@ball_speed)
+  @spec starting_dx() :: number
+  def starting_dx(), do: @starting_angles |> Enum.random() |> :math.cos() |> Kernel.*(@ball_speed)
 end
