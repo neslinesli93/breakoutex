@@ -30,7 +30,7 @@ defmodule DemoWeb.ArkanoidLive.Config do
       # Radius of the ball, in pixels
       @ball_radius 5
       # Misc
-      @ball_speed 1
+      @ball_speed 4
 
       @left_keys ["ArrowLeft", "a", "A"]
       @right_keys ["ArrowRight", "d", "D"]
@@ -67,7 +67,7 @@ defmodule DemoWeb.ArkanoidLive.Config do
       @board_rows length(@board)
       @board_cols length(hd(@board))
 
-      defp get_initial_state() do
+      defp initial_state() do
         %{
           game_state: :wait,
           tick: @tick,

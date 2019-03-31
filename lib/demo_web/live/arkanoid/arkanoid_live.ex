@@ -14,8 +14,8 @@ defmodule DemoWeb.ArkanoidLive do
     ~L"""
     <div class="game-container" phx-keydown="keydown" phx-keyup="keyup" phx-target="window">
       <div class="block ball"
-          style="left: <%= @ball.left %>px;
-                top: <%= @ball.top %>px;
+          style="left: <%= @ball.x - @ball.radius %>px;
+                top: <%= @ball.y - @ball.radius %>px;
                 width: <%= @ball.width %>px;
                 height: <%= @ball.height %>px; "></div>
 
@@ -46,7 +46,7 @@ defmodule DemoWeb.ArkanoidLive do
   end
 
   def mount(_session, socket) do
-    state = get_initial_state()
+    state = initial_state()
 
     socket =
       socket
@@ -211,7 +211,7 @@ defmodule DemoWeb.ArkanoidLive do
 
   defp check_gameover(%{assigns: %{ball: ball, unit: unit}} = socket) do
     if ball.y >= @board_rows * unit do
-      state = get_initial_state()
+      state = initial_state()
 
       socket
       |> assign(state)
@@ -282,27 +282,17 @@ defmodule DemoWeb.ArkanoidLive do
   end
 
   defp do_advance_paddle(%{assigns: %{paddle: paddle, unit: unit}} = socket, :left) do
+    new_left = max(unit, paddle.left - paddle.speed)
+
     socket
-    |> assign(
-      :paddle,
-      paddle
-      |> update_in([:left], fn x -> max(unit, x - paddle.speed) end)
-      |> update_in([:right], fn x -> max(unit, x - paddle.speed) end)
-    )
+    |> assign(:paddle, %{paddle | left: new_left, right: paddle.right - (paddle.left - new_left)})
   end
 
   defp do_advance_paddle(%{assigns: %{paddle: paddle, unit: unit}} = socket, :right) do
+    new_left = min(paddle.left + paddle.speed, unit * (@board_cols - paddle.length - 1))
+
     socket
-    |> assign(
-      :paddle,
-      paddle
-      |> update_in([:left], fn x ->
-        min(x + paddle.speed, unit * (@board_cols - paddle.length - 1))
-      end)
-      |> update_in([:right], fn x ->
-        min(x + paddle.speed, unit * (@board_cols - paddle.length - 1))
-      end)
-    )
+    |> assign(:paddle, %{paddle | left: new_left, right: paddle.right + (new_left - paddle.left)})
   end
 
   defp do_advance_paddle(socket, :stationary), do: socket
