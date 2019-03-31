@@ -48,21 +48,22 @@ defmodule DemoWeb.ArkanoidLive do
 
   def mount(_session, socket) do
     props = %{
-      # game state info
+      # game info
       game_state: :wait,
-      width: @width,
       tick: @tick,
+      width: @width,
+      height: @width,
       # paddle info (top left coordinates)
-      paddle_x: Helpers.x_coord(@paddle_x, @width),
-      paddle_y: Helpers.y_coord(@paddle_y, @width),
+      paddle_x: Helpers.top_left_x(@paddle_x, @width),
+      paddle_y: Helpers.top_left_y(@paddle_y, @width),
       paddle_length: @paddle_length,
       paddle_direction: :stationary,
       # ball info (initially placed at the middle of the paddle, one row above)
       # N.B: here we are using full coordinates, rather than scaled to the board
       ball_width: @ball_width,
       ball_radius: @ball_radius,
-      x: Helpers.x_coord(@ball_x, @width),
-      y: Helpers.y_coord(@ball_y, @width),
+      x: Helpers.top_left_x(@ball_x, @width),
+      y: Helpers.top_left_y(@ball_y, @width),
       dx: 0,
       dy: 0
     }
@@ -70,8 +71,8 @@ defmodule DemoWeb.ArkanoidLive do
     socket =
       socket
       |> assign(props)
-      |> assign(:blocks, props.width |> Board.build_board())
-      |> assign(:bricks, props.width |> Board.build_board() |> Board.build_bricks())
+      |> assign(:blocks, Board.build_board(props.width, props.height))
+      |> assign(:bricks, Board.build_bricks(props.width, props.height))
       |> advance_ball()
 
     if connected?(socket) do

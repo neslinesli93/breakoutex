@@ -1,11 +1,17 @@
 defmodule DemoWeb.ArkanoidLive.Config do
   defmacro __using__(_) do
     quote do
+      # Time in ms that schedules the game loop
       @tick 16
+      # Width in px used as the base for every type of block: bricks, paddle, walls, etc.
+      # Every length param is expressed as "number of basic unit", that is to say
+      # N times the basic unit aka the width
       @width 20
 
+      # Available block colors inside the ascii representation of the board
       @brick_colors ~w(r b g o p y)
-      @block_length 3
+      # Brick size
+      @brick_length 3
 
       # x coordinate of the left corner of the paddle
       # TODO: Add top/bottom and left/right
