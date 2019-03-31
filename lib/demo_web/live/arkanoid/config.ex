@@ -27,7 +27,7 @@ defmodule DemoWeb.ArkanoidLive.Config do
 
       @starting_angles [-60, -45, -30, -15, 15, 30, 45, 60]
 
-      # Syntax:
+      # Game board represented as an ASCII matrix. Block types:
       # - X are the walls
       # - D is the floor
       # - r, b, g, o, p, y are the colors of the different blocks

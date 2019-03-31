@@ -46,7 +46,6 @@ defmodule DemoWeb.ArkanoidLive do
     """
   end
 
-  # TODO: platform is useless as an array, we can remove it and only keep the head
   def mount(_session, socket) do
     props = %{
       # game state info
