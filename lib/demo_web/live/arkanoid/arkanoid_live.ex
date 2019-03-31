@@ -7,73 +7,52 @@ defmodule DemoWeb.ArkanoidLive do
   alias DemoWeb.ArkanoidLive.Board
   alias DemoWeb.ArkanoidLive.Engine
 
+  # We use x and y fields for drawing, and since we are using as values in pixels
+  # for top/left CSS properties, they refer to the coordinates of the top-left vertex
+  # of the block (be it a brick, paddle, etc)
   def render(assigns) do
     ~L"""
     <div class="game-container" phx-keydown="keydown" phx-keyup="keyup" phx-target="window">
       <div class="block ball"
-          style="left: <%= @x %>px;
-                top: <%= @y %>px;
-                width: <%= @ball_width %>px;
-                height: <%= @ball_width %>px;
-      "></div>
+          style="left: <%= @ball.left %>px;
+                top: <%= @ball.top %>px;
+                width: <%= @ball.width %>px;
+                height: <%= @ball.height %>px; "></div>
 
       <div class="block paddle"
-          style="left: <%= @paddle_x %>px;
-            top: <%= @paddle_y %>px;
-            width: <%= @width * @paddle_length %>px;
-            height: <%= @width %>px;
-      "></div>
+          style="left: <%= @paddle.left %>px;
+            top: <%= @paddle.top %>px;
+            width: <%= @paddle.width %>px;
+            height: <%= @paddle.height %>px; "></div>
 
       <%= for block <- @blocks, block.type in [:wall, :floor] do %>
         <div class="block <%= block.type %>"
-            style="left: <%= block.x %>px;
-                    top: <%= block.y %>px;
+            style="left: <%= block.left %>px;
+                    top: <%= block.top %>px;
                     width: <%= block.width %>px;
-                    height: <%= block.height %>px; %>;
-        "></div>
+                    height: <%= block.height %>px; %>; "></div>
       <% end %>
 
-      <%= for brick <- @bricks, brick.visible == true do %>
+      <%= for block <- @obstacles, block.type == :brick and block.visible == true do %>
         <div class="block brick"
-            style="left: <%= brick.x %>px;
-                    top: <%= brick.y %>px;
-                    width: <%= brick.width %>px;
-                    height: <%= brick.height %>px;
-                    background: <%= Map.fetch!(brick, :color) %>;
-        "></div>
+            style="left: <%= block.left %>px;
+                    top: <%= block.top %>px;
+                    width: <%= block.width %>px;
+                    height: <%= block.height %>px;
+                    background: <%= Map.fetch!(block, :color) %>; "></div>
       <% end %>
     </div>
     """
   end
 
   def mount(_session, socket) do
-    props = %{
-      # game info
-      game_state: :wait,
-      tick: @tick,
-      width: @width,
-      height: @width,
-      # paddle info (top left coordinates)
-      paddle_x: Helpers.top_left_x(@paddle_x, @width),
-      paddle_y: Helpers.top_left_y(@paddle_y, @width),
-      paddle_length: @paddle_length,
-      paddle_direction: :stationary,
-      # ball info (initially placed at the middle of the paddle, one row above)
-      # N.B: here we are using full coordinates, rather than scaled to the board
-      ball_width: @ball_width,
-      ball_radius: @ball_radius,
-      x: Helpers.top_left_x(@ball_x, @width),
-      y: Helpers.top_left_y(@ball_y, @width),
-      dx: 0,
-      dy: 0
-    }
+    state = get_initial_state()
 
     socket =
       socket
-      |> assign(props)
-      |> assign(:blocks, Board.build_board(props.width, props.height))
-      |> assign(:bricks, Board.build_bricks(props.width, props.height))
-      |> advance_ball()
+      |> assign(state)
+      |> assign(:blocks, Board.build_board(state.unit, state.unit))
+      |> assign(:obstacles, Board.build_obstacles(state.unit, state.unit))
 
     if connected?(socket) do
       {:ok, schedule_tick(socket)}
@@ -103,8 +82,9 @@ defmodule DemoWeb.ArkanoidLive do
     socket
     |> advance_paddle()
     |> advance_ball()
-    |> brick_collision()
+    |> obstacles_collision()
     |> paddle_collision()
+    |> check_gameover()
   end
 
   defp game_loop(socket), do: socket
@@ -114,52 +94,35 @@ defmodule DemoWeb.ArkanoidLive do
     socket
   end
 
-  defp advance_ball(socket) do
-    %{x: x, y: y, dx: dx, dy: dy, width: width} = socket.assigns
-
-    new_dx = ball_horizontal(x, dx, width)
-    new_dy = ball_vertical(y, dy, width)
-
+  defp advance_ball(%{assigns: %{ball: ball}} = socket) do
     socket
-    |> assign(:x, x + new_dx)
-    |> assign(:y, y + new_dy)
-    |> assign(:dx, new_dx)
-    |> assign(:dy, new_dy)
+    |> assign(
+      :ball,
+      ball
+      |> update_in([:x], &(&1 + ball.dx))
+      |> update_in([:left], &(&1 + ball.dx))
+      |> update_in([:y], &(&1 + ball.dy))
+      |> update_in([:top], &(&1 + ball.dy))
+    )
   end
 
-  # TODO: This should be ((@board_cols - 1) * w) - 2 * ball_radius
-  defp ball_horizontal(x, dx, w) when x + dx >= (@board_cols - 2) * w, do: -dx
-  defp ball_horizontal(x, dx, w) when x + dx < w, do: -dx
-  defp ball_horizontal(_x, dx, _), do: dx
-
-  defp ball_vertical(y, dy, w) when y + dy >= (@board_rows - 1) * w, do: -dy
-  defp ball_vertical(y, dy, w) when y + dy < w, do: -dy
-  defp ball_vertical(_y, dy, _), do: dy
-
-  # Compute the closest point of intersection (if any) between the ball and bricks
-  defp brick_collision(
-         %{assigns: %{bricks: bricks, ball_width: ball_width, dx: dx, dy: dy, ball_radius: radius}} =
-           socket
-       ) do
-    # Use center coordinates
-    x = socket.assigns.x + ball_width / 2
-    y = socket.assigns.y + ball_width / 2
-
-    bricks
+  # Compute the closest point of intersection, if any, between the ball and obstacles (bricks, walls)
+  defp obstacles_collision(%{assigns: %{obstacles: obstacles, ball: ball}} = socket) do
+    obstacles
     |> Enum.filter(& &1.visible)
-    |> Enum.reduce(nil, fn brick, acc ->
-      case {Engine.collision_point(x, y, dx, dy, radius, brick), acc} do
+    |> Enum.reduce(nil, fn block, acc ->
+      case {Engine.collision_point(ball.x, ball.y, ball.dx, ball.dy, ball.radius, block), acc} do
         {nil, _} ->
           acc
 
         {p, nil} ->
-          build_closest(brick, p, x, y)
+          build_closest(block, p, ball)
 
         {p, %{distance: distance}} ->
-          new_distance = Engine.compute_distance({p.x, p.y}, {x, y})
+          new_distance = Engine.compute_distance({p.x, p.y}, {ball.x, ball.y})
 
           if new_distance < distance do
-            build_closest(brick, p, x, y)
+            build_closest(block, p, ball)
           else
             acc
           end
@@ -169,22 +132,32 @@ defmodule DemoWeb.ArkanoidLive do
       nil ->
         socket
 
-      %{brick: brick, point: point} ->
+      %{block: block, point: point} ->
         socket
-        |> assign(:bricks, hide_brick(bricks, brick.id))
-        |> assign(:x, point.x - ball_width / 2)
-        |> assign(:y, point.y - ball_width / 2)
-        |> assign(:dx, collision_direction_x(dx, point.direction))
-        |> assign(:dy, collision_direction_y(dy, point.direction))
+        |> assign(:obstacles, hide_brick(obstacles, block.id))
+        |> assign(
+          :ball,
+          %{
+            ball
+            | x: point.x,
+              y: point.y,
+              dx: collision_direction_x(ball.dx, point.direction),
+              dy: collision_direction_y(ball.dy, point.direction),
+              left: point.x - ball.radius,
+              top: point.y - ball.radius
+          }
+        )
     end
   end
 
-  defp build_closest(brick, p, ball_x, ball_y) do
-    %{brick: brick, point: p, distance: Engine.compute_distance({p.x, p.y}, {ball_x, ball_y})}
+  defp build_closest(block, p, ball) do
+    %{block: block, point: p, distance: Engine.compute_distance({p.x, p.y}, {ball.x, ball.y})}
   end
 
-  defp hide_brick(bricks, id) do
-    update_in(bricks, [Access.filter(&(&1.id == id)), :visible], fn _ -> false end)
+  defp hide_brick(blocks, id) do
+    update_in(blocks, [Access.filter(&(&1.id == id and &1.type == :brick)), :visible], fn
+      _ -> false
+    end)
   end
 
   defp collision_direction_x(dx, direction) when direction in [:left, :right], do: -dx
@@ -193,53 +166,60 @@ defmodule DemoWeb.ArkanoidLive do
   defp collision_direction_y(dy, direction) when direction in [:top, :bottom], do: -dy
   defp collision_direction_y(dy, _), do: dy
 
-  # TODO: Improve this by giving top/bottom left/right coords to the paddle
-  defp paddle_collision(
-         %{
-           assigns: %{
-             dx: dx,
-             dy: dy,
-             width: w,
-             paddle_x: paddle_x,
-             paddle_y: paddle_y,
-             ball_radius: radius,
-             ball_width: ball_width
-           }
-         } = socket
-       ) do
-    # Use center coordinates
-    x = socket.assigns.x + ball_width / 2
-    y = socket.assigns.y + ball_width / 2
-
-    paddle_rect = %{
-      left: paddle_x,
-      right: paddle_x + @paddle_length * w,
-      top: paddle_y,
-      bottom: paddle_y + w
-    }
-
-    case(Engine.collision_point(x, y, dx, dy, radius, paddle_rect)) do
+  defp paddle_collision(%{assigns: %{ball: ball, paddle: paddle, unit: unit}} = socket) do
+    Engine.collision_point(ball.x, ball.y, ball.dx, ball.dy, ball.radius, paddle)
+    |> case do
       nil ->
         socket
 
       %{direction: :top} = point ->
         socket
-        |> assign(:x, point.x - ball_width / 2)
-        |> assign(:y, point.y - ball_width / 2)
-        |> assign(:dx, ball_dx_after_paddle(point.x - ball_width / 2, paddle_x, w))
-        |> assign(:dy, -dy)
+        |> assign(
+          :ball,
+          %{
+            ball
+            | x: point.x,
+              y: point.y,
+              dx: ball_dx_after_paddle(point.x, paddle.left, unit),
+              dy: -ball.dy,
+              left: point.x - ball.radius,
+              top: point.y - ball.radius
+          }
+        )
 
       # This match is only needed for graphical consistency, since the game is already lost at this point
       point ->
         socket
-        |> assign(:x, point.x - ball_width / 2)
-        |> assign(:y, point.y - ball_width / 2)
-        |> assign(:dx, -dx)
+        |> assign(
+          :ball,
+          %{
+            ball
+            | x: point.x,
+              y: point.y,
+              dx: -ball.dx,
+              left: point.x - ball.radius,
+              top: point.y - ball.radius
+          }
+        )
     end
   end
 
-  defp ball_dx_after_paddle(x, paddle_x, w) do
-    @ball_speed * (x - (paddle_x + @paddle_length * w / 2)) / (@paddle_length * w / 2)
+  # Make the ball bounce off using the arkanoid style
+  defp ball_dx_after_paddle(point_x, paddle_x, unit) do
+    @ball_speed * (point_x - (paddle_x + @paddle_length * unit / 2)) / (@paddle_length * unit / 2)
+  end
+
+  defp check_gameover(%{assigns: %{ball: ball, unit: unit}} = socket) do
+    if ball.y >= @board_rows * unit do
+      state = get_initial_state()
+
+      socket
+      |> assign(state)
+      |> assign(:blocks, Board.build_board(state.unit, state.unit))
+      |> assign(:obstacles, Board.build_obstacles(state.unit, state.unit))
+    else
+      socket
+    end
   end
 
   # Handle keydown events
@@ -267,52 +247,62 @@ defmodule DemoWeb.ArkanoidLive do
   defp on_stop_input(socket, _), do: socket
 
   # Start moving the ball up, in a random horizontal direction
-  defp start_game(%{assigns: %{game_state: state}} = socket)
+  defp start_game(%{assigns: %{game_state: state, ball: ball}} = socket)
        when state in [:wait, :over] do
     socket
-    |> assign(:dy, -@ball_speed)
-    |> assign(:dx, Helpers.starting_x())
     |> assign(:game_state, :playing)
+    |> assign(
+      :ball,
+      %{ball | dx: Helpers.starting_dx(), dy: -ball.speed}
+    )
   end
 
   defp start_game(socket), do: socket
 
-  defp move_paddle(socket, direction) do
-    if socket.assigns.paddle_direction == direction do
+  defp move_paddle(%{assigns: %{paddle: paddle}} = socket, direction) do
+    if paddle.direction == direction do
       socket
     else
       socket
-      |> assign(:paddle_direction, direction)
+      |> assign(:paddle, %{paddle | direction: direction})
     end
   end
 
-  defp stop_paddle(socket, direction) do
-    if socket.assigns.paddle_direction == direction do
+  defp stop_paddle(%{assigns: %{paddle: paddle}} = socket, direction) do
+    if paddle.direction == direction do
       socket
-      |> assign(:paddle_direction, :stationary)
+      |> assign(:paddle, %{paddle | direction: :stationary})
     else
       socket
     end
   end
 
   defp advance_paddle(socket) do
-    do_advance_paddle(socket, socket.assigns.paddle_direction)
+    do_advance_paddle(socket, socket.assigns.paddle.direction)
   end
 
-  defp do_advance_paddle(socket, :left) do
-    width = socket.assigns.width
-    paddle_x = socket.assigns.paddle_x
-
+  defp do_advance_paddle(%{assigns: %{paddle: paddle, unit: unit}} = socket, :left) do
     socket
-    |> assign(:paddle_x, max(1 * width, paddle_x - @paddle_speed))
+    |> assign(
+      :paddle,
+      paddle
+      |> update_in([:left], fn x -> max(unit, x - paddle.speed) end)
+      |> update_in([:right], fn x -> max(unit, x - paddle.speed) end)
+    )
   end
 
-  defp do_advance_paddle(socket, :right) do
-    width = socket.assigns.width
-    paddle_x = socket.assigns.paddle_x
-
+  defp do_advance_paddle(%{assigns: %{paddle: paddle, unit: unit}} = socket, :right) do
     socket
-    |> assign(:paddle_x, min(paddle_x + @paddle_speed, width * (@board_cols - @paddle_length - 1)))
+    |> assign(
+      :paddle,
+      paddle
+      |> update_in([:left], fn x ->
+        min(x + paddle.speed, unit * (@board_cols - paddle.length - 1))
+      end)
+      |> update_in([:right], fn x ->
+        min(x + paddle.speed, unit * (@board_cols - paddle.length - 1))
+      end)
+    )
   end
 
   defp do_advance_paddle(socket, :stationary), do: socket

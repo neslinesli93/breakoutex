@@ -28,28 +28,18 @@ defmodule DemoWeb.ArkanoidLive.Board do
     blocks
   end
 
-  @spec build_bricks(number, number) :: [map]
-  def build_bricks(width, height) do
+  @spec build_obstacles(number, number) :: [map]
+  def build_obstacles(width, height) do
     width
     |> build_board(height)
-    |> Enum.filter(&(&1.type == :brick))
-  end
-
-  defp wall(x_idx, y_idx, width, height) do
-    %{
-      type: :wall,
-      x: Helpers.top_left_x(x_idx, width),
-      y: Helpers.top_left_y(y_idx, height),
-      width: width,
-      height: height
-    }
+    |> Enum.filter(&(&1.type in [:brick, :wall]))
   end
 
   defp floor(x_idx, y_idx, width, height) do
     %{
       type: :floor,
-      x: Helpers.top_left_x(x_idx, width),
-      y: Helpers.top_left_y(y_idx, height),
+      left: Helpers.coordinate(x_idx, width),
+      top: Helpers.coordinate(y_idx, height),
       width: width,
       height: height
     }
@@ -58,10 +48,24 @@ defmodule DemoWeb.ArkanoidLive.Board do
   defp empty(x_idx, y_idx, width, height) do
     %{
       type: :empty,
-      x: Helpers.top_left_x(x_idx, width),
-      y: Helpers.top_left_y(y_idx, height),
+      left: Helpers.coordinate(x_idx, width),
+      top: Helpers.coordinate(y_idx, height),
       width: width,
       height: height
+    }
+  end
+
+  defp wall(x_idx, y_idx, width, height) do
+    %{
+      type: :wall,
+      width: width,
+      height: height,
+      id: y_idx * @board_rows + x_idx,
+      visible: true,
+      left: Helpers.coordinate(x_idx, width),
+      top: Helpers.coordinate(y_idx, height),
+      right: Helpers.coordinate(x_idx, width) + width,
+      bottom: Helpers.coordinate(y_idx, height) + height
     }
   end
 
@@ -69,17 +73,14 @@ defmodule DemoWeb.ArkanoidLive.Board do
     %{
       type: :brick,
       color: Helpers.get_color(color),
-      x: Helpers.top_left_x(x_idx, width),
-      y: Helpers.top_left_y(y_idx, height),
       width: width * @brick_length,
       height: height,
       id: y_idx * @board_rows + x_idx,
       visible: true,
-      # collision detection stuff
-      top: Helpers.top_left_y(y_idx, height),
-      bottom: Helpers.top_left_y(y_idx, height) + height,
-      left: Helpers.top_left_x(x_idx, width),
-      right: Helpers.top_left_x(x_idx, width) + width * @brick_length
+      left: Helpers.coordinate(x_idx, width),
+      top: Helpers.coordinate(y_idx, height),
+      right: Helpers.coordinate(x_idx, width) + width * @brick_length,
+      bottom: Helpers.coordinate(y_idx, height) + height
     }
   end
 end
