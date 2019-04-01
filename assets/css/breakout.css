@@ -9,7 +9,9 @@ html {
 }
 
 .game-container {
-  position: absolute;
+  position: relative;
+  /* Subtract half of the board width*/
+  left: calc(50% - 260px);
 }
 
 .game-container .block{
