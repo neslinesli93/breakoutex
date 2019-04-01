@@ -1,4 +1,4 @@
-defmodule DemoWeb.ChannelCase do
+defmodule BreakoutLiveWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -21,15 +21,15 @@ defmodule DemoWeb.ChannelCase do
       use Phoenix.ChannelTest
 
       # The default endpoint for testing
-      @endpoint DemoWeb.Endpoint
+      @endpoint BreakoutLiveWeb.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Demo.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(BreakoutLive.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Demo.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(BreakoutLive.Repo, {:shared, self()})
     end
 
     :ok

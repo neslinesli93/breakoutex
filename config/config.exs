@@ -6,15 +6,15 @@
 use Mix.Config
 
 # General application configuration
-config :demo,
-  ecto_repos: [Demo.Repo]
+config :breakout_live,
+  ecto_repos: [BreakoutLive.Repo]
 
 # Configures the endpoint
-config :demo, DemoWeb.Endpoint,
+config :breakout_live, BreakoutLiveWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "zlMbr9KIbSMRg9BXFBpsWgVUqeDm09NBI9124BQ8u+2R6ZRk9hcPe9iC4ciM5rZ4",
-  render_errors: [view: DemoWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Demo.PubSub, adapter: Phoenix.PubSub.PG2],
+  render_errors: [view: BreakoutLiveWeb.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: BreakoutLive.PubSub, adapter: Phoenix.PubSub.PG2],
   live_view: [signing_salt: "NZIguRPO"]
 
 # Configures Elixir's Logger

@@ -1,0 +1,43 @@
+@import url(https://fonts.googleapis.com/css?family=Press+Start+2P);
+
+html {
+  overflow-x:hidden;
+}
+
+.container {
+  padding: 8rem 0 0 0;
+}
+
+.game-container {
+  position: absolute;
+}
+
+.game-container .block{
+  display: block;
+  position: absolute;
+}
+
+.game-container .block.wall {
+  background: blue; 
+}
+
+.game-container .block.empty {
+  background: #000000; 
+}
+
+.game-container .block.paddle {
+  background: gray;
+  will-change: left, top;
+}
+
+.game-container .block.ball {
+  background: black;
+  border-radius: 50%;
+  will-change: left, top;
+}
+
+.game-container .block.brick {
+  border-style: solid;
+  border-color: gray;
+  border-width: 1px;
+}

@@ -1,9 +1,9 @@
-defmodule Demo.Mixfile do
+defmodule BreakoutLive.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :demo,
+      app: :breakout_live,
       version: "0.1.0",
       elixir: "~> 1.8",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -19,7 +19,7 @@ defmodule Demo.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {Demo.Application, []},
+      mod: {BreakoutLive.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end

@@ -6,7 +6,7 @@ use Mix.Config
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
-config :demo, DemoWeb.Endpoint,
+config :breakout_live, BreakoutLiveWeb.Endpoint,
   http: [port: 4000],
   # https: [port: 4001, certfile: "priv/cert/selfsigned.pem", keyfile: "priv/cert/selfsigned_key.pem"],
   debug_errors: true,
@@ -46,14 +46,14 @@ config :demo, DemoWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :demo, DemoWeb.Endpoint,
+config :breakout_live, BreakoutLiveWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
-      ~r{lib/demo_web/views/.*(ex)$},
-      ~r{lib/demo_web/templates/.*(eex)$},
-      ~r{lib/demo_web/live/.*(ex)$},
+      ~r{lib/breakout_live_web/views/.*(ex)$},
+      ~r{lib/breakout_live_web/templates/.*(eex)$},
+      ~r{lib/breakout_live_web/live/.*(ex)$}
     ]
   ]
 
@@ -67,11 +67,3 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
-
-# Configure your database
-config :demo, Demo.Repo,
-  username: "postgres",
-  password: "postgres",
-  database: "demo_dev",
-  hostname: "db",
-  pool_size: 10

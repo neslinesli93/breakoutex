@@ -2,10 +2,7 @@
 
 @import "./phoenix.css";
 @import "./live_view.css";
-@import "./pacman.css";
-@import "./snake.css";
-@import "./thermostat.css";
-@import "./arkanoid.css";
+@import "./breakout.css";
 
 pre{
   padding: 1em;
@@ -40,9 +37,6 @@ pre{
 [data-phx-view]{
   padding: 1em;
 }
-
-
-
 
 .datalist-polyfill {
 	list-style: none;
