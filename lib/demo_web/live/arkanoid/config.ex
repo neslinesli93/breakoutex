@@ -73,6 +73,8 @@ defmodule DemoWeb.ArkanoidLive.Config do
           tick: @tick,
           # Basic unit for measuring blocks size
           unit: @unit,
+          board_rows: @board_rows,
+          board_cols: @board_cols,
           paddle: %{
             width: @paddle_length * @unit,
             height: @paddle_height * @unit,

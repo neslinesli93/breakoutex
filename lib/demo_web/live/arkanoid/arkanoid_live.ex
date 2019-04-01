@@ -12,28 +12,28 @@ defmodule DemoWeb.ArkanoidLive do
     ~L"""
     <div class="game-container" phx-keydown="keydown" phx-keyup="keyup" phx-target="window">
       <div class="block ball"
-          style="left: <%= @ball.x - @ball.radius %>px;
+          style="left: <%= left(@ball.x - @ball.radius, @unit, @board_rows, @board_cols) %>;
                 top: <%= @ball.y - @ball.radius %>px;
                 width: <%= @ball.width %>px;
                 height: <%= @ball.height %>px; "></div>
 
       <div class="block paddle"
-          style="left: <%= @paddle.left %>px;
+          style="left: <%= left(@paddle.left, @unit, @board_rows, @board_cols) %>;
             top: <%= @paddle.top %>px;
             width: <%= @paddle.width %>px;
             height: <%= @paddle.height %>px; "></div>
 
       <%= for block <- @blocks, block.type in [:wall, :floor] do %>
         <div class="block <%= block.type %>"
-            style="left: <%= block.left %>px;
+            style="left: <%= left(block.left, @unit, @board_rows, @board_cols) %>;
                     top: <%= block.top %>px;
                     width: <%= block.width %>px;
-                    height: <%= block.height %>px; %>; "></div>
+                    height: <%= block.height %>px; "></div>
       <% end %>
 
       <%= for brick <- @bricks, brick.visible == true do %>
         <div class="block brick"
-            style="left: <%= brick.left %>px;
+            style="left: <%= left(brick.left, @unit, @board_rows, @board_cols) %>;
                     top: <%= brick.top %>px;
                     width: <%= brick.width %>px;
                     height: <%= brick.height %>px;
@@ -41,6 +41,10 @@ defmodule DemoWeb.ArkanoidLive do
       <% end %>
     </div>
     """
+  end
+
+  defp left(x, unit, rows, cols) do
+    "calc(50% + #{unit * rows / 2}px + #{x}px)"
   end
 
   def mount(_session, socket) do
