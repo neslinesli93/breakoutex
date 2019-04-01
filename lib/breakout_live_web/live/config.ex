@@ -15,7 +15,7 @@ defmodule BreakoutLiveWeb.Live.Config do
       @brick_length 3
 
       # Coordinates of the top-left vertex of the paddle. They are relative to the board matrix
-      @paddle_left 10
+      @paddle_left 11
       @paddle_top 18
       # Paddle length expressed in basic units
       @paddle_length 5
@@ -25,7 +25,7 @@ defmodule BreakoutLiveWeb.Live.Config do
       @paddle_speed 10
 
       # Coordinates of the center of the ball, initially a bit above the center of the paddle
-      @ball_x 12.5
+      @ball_x 13.5
       @ball_y 17.5
       # Radius of the ball, in pixels
       @ball_radius 5
@@ -51,6 +51,7 @@ defmodule BreakoutLiveWeb.Live.Config do
         ~w(X o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 X),
         ~w(X p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 X),
         ~w(X y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 X),
+        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
         ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
         ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
         ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),

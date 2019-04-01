@@ -2,10 +2,11 @@
 
 html {
   overflow-x:hidden;
+  background: black;
 }
 
 .container {
-  padding: 8rem 0 0 0;
+  padding: 6rem 0 0 0;
 }
 
 .game-container {
@@ -19,21 +20,18 @@ html {
   position: absolute;
 }
 
-.game-container .block.wall {
-  background: blue; 
-}
-
-.game-container .block.empty {
-  background: #000000; 
+.game-container .block.wall,
+.game-container .block.floor {
+  background: #717D7E;
 }
 
 .game-container .block.paddle {
-  background: gray;
+  background: #717D7E;
   will-change: left, top;
 }
 
 .game-container .block.ball {
-  background: black;
+  background: #CA6F1E;
   border-radius: 50%;
   will-change: left, top;
 }
