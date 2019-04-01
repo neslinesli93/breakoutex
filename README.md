@@ -4,14 +4,14 @@ Boilerplate taken from [here](https://github.com/chrismccord/phoenix_live_view_e
 
 # TODO
 - [x] Lose game
-- [ ] Win game
+- [x] Win game
 - [ ] Function to call in order to receive a new, updated ball instance
 - [ ] Progressive ball acceleration
 - [ ] CSS of the page
 - [x] Use coordinates of the center of the ball?
 - [x] Use coordinates of the center of the paddle?
 - [ ] Refactor everything NOT to use integer matrix coordinates, and instead compute everything inside config file?
-- [ ] Transfer the project on a fresh, clean mix one (just like the guy that made the board game)
+- [x] Transfer the project on a fresh, clean mix one (just like the guy that made the board game)
 - [ ] How to deploy?
 - [ ] Article(s) or tutorial?
 

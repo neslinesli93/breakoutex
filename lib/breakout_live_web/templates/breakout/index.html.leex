@@ -1,19 +1,19 @@
 <div class="game-container" phx-keydown="keydown" phx-keyup="keyup" phx-target="window">
     <div class="block ball"
-        style="left: <%= @left.(@ball.x - @ball.radius, @unit, @board_rows, @board_cols) %>;
+        style="left: calc(50% + <%= @unit * @board_rows / 2 %>px + <%= @ball.x - @ball.radius %>px);
             top: <%= @ball.y - @ball.radius %>px;
             width: <%= @ball.width %>px;
             height: <%= @ball.height %>px; "></div>
 
     <div class="block paddle"
-        style="left: <%= @left.(@paddle.left, @unit, @board_rows, @board_cols) %>;
+        style="left: calc(50% + <%= @unit * @board_rows / 2 %>px + <%= @paddle.left %>px);
         top: <%= @paddle.top %>px;
         width: <%= @paddle.width %>px;
         height: <%= @paddle.height %>px; "></div>
 
     <%= for block <- @blocks, block.type in [:wall, :floor] do %>
     <div class="block <%= block.type %>"
-        style="left: <%= @left.(block.left, @unit, @board_rows, @board_cols) %>;
+        style="left: calc(50% + <%= @unit * @board_rows / 2 %>px + <%= block.left %>px);
                 top: <%= block.top %>px;
                 width: <%= block.width %>px;
                 height: <%= block.height %>px; "></div>
@@ -21,7 +21,7 @@
 
     <%= for brick <- @bricks, brick.visible == true do %>
     <div class="block brick"
-        style="left: <%= @left.(brick.left, @unit, @board_rows, @board_cols) %>;
+        style="left: calc(50% + <%= @unit * @board_rows / 2 %>px + <%= brick.left %>px);
                 top: <%= brick.top %>px;
                 width: <%= brick.width %>px;
                 height: <%= brick.height %>px;

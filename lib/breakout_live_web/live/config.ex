@@ -75,7 +75,6 @@ defmodule BreakoutLiveWeb.Live.Config do
           unit: @unit,
           board_rows: @board_rows,
           board_cols: @board_cols,
-          left: &left/4,
           paddle: %{
             width: @paddle_length * @unit,
             height: @paddle_height * @unit,
@@ -111,11 +110,6 @@ defmodule BreakoutLiveWeb.Live.Config do
             speed: @ball_speed
           }
         }
-      end
-
-      # Horizontally center the board
-      defp left(x, unit, rows, _) do
-        "calc(50% + #{unit * rows / 2}px + #{x}px)"
       end
     end
   end
