@@ -71,7 +71,7 @@ defmodule BreakoutLiveWeb.Live.Blocks do
       color: get_color(color),
       width: width * @brick_length,
       height: height,
-      id: y_idx * @board_rows + x_idx,
+      id: UUID.uuid4(),
       visible: true,
       left: Helpers.coordinate(x_idx, width),
       top: Helpers.coordinate(y_idx, height),

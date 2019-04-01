@@ -46,7 +46,8 @@ defmodule BreakoutLive.Mixfile do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:cowboy, "~> 2.0"},
-      {:calendar, "~> 0.17.4"}
+      {:calendar, "~> 0.17.4"},
+      {:elixir_uuid, "~> 1.2"}
     ]
   end
 
