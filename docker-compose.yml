@@ -2,13 +2,13 @@ version: '3.5'
 
 services:
   app:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile-dev
     expose:
       - "4000"
     ports:
       - "4000:4000"
-    depends_on:
-      - db
     environment:
       - PORT=4000
       - MIX_ENV=dev

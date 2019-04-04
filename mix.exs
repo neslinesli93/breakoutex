@@ -47,7 +47,9 @@ defmodule BreakoutLive.Mixfile do
       {:jason, "~> 1.0"},
       {:cowboy, "~> 2.0"},
       {:calendar, "~> 0.17.4"},
-      {:elixir_uuid, "~> 1.2"}
+      {:elixir_uuid, "~> 1.2"},
+      {:distillery, "~> 2.0"},
+      {:tzdata, "~> 1.0.0-rc.1", override: true}
     ]
   end
 
