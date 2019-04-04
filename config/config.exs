@@ -11,7 +11,10 @@ config :breakout_live,
 
 # Configures the endpoint
 config :breakout_live, BreakoutLiveWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [
+    host: System.get_env("HOSTNAME") || "localhost",
+    port: System.get_env("PORT") || 4000
+  ],
   secret_key_base: "zlMbr9KIbSMRg9BXFBpsWgVUqeDm09NBI9124BQ8u+2R6ZRk9hcPe9iC4ciM5rZ4",
   render_errors: [view: BreakoutLiveWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: BreakoutLive.PubSub, adapter: Phoenix.PubSub.PG2],
