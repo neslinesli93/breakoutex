@@ -28,6 +28,7 @@ html {
 .game-container .block.paddle {
   background: #717D7E;
   will-change: left, top;
+  border-radius: 20px;
 }
 
 .game-container .block.ball {
