@@ -42,4 +42,4 @@ npm-debug.log
 /config/*.secret.exs
 .elixir_ls
 
-deploy/docker.env.prod
+env/docker.env.prod

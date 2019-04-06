@@ -1,9 +1,0 @@
-version: '3.5'
-
-services:
-  web:
-    image: "neslinesli93/breakout_live:latest"
-    ports:
-      - "4000:4000" # In our .env file above, we chose port 4000
-    env_file:
-      - docker.env.prod

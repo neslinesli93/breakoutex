@@ -2,14 +2,13 @@ version: '3.5'
 
 services:
   app:
-    build: .
+    image: bitwalker/alpine-elixir-phoenix:1.8.1
     expose:
       - "4000"
     ports:
       - "4000:4000"
-    environment:
-      - PORT=4000
-      - MIX_ENV=dev
+    env_file:
+      - env/docker.env
     volumes:
       - .:/home/app
     working_dir: /home/app

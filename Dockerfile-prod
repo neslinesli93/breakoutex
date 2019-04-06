@@ -17,14 +17,11 @@ ARG SKIP_PHOENIX=false
 # argument to the directory the Phoenix app is in so that the assets
 # can be built
 ARG PHOENIX_SUBDIR=.
-# Secret for the endpoint (required)
-ARG PHOENIX_SECRET
 
 ENV SKIP_PHOENIX=${SKIP_PHOENIX} \
     APP_NAME=${APP_NAME} \
     APP_VSN=${APP_VSN} \
-    MIX_ENV=${MIX_ENV} \
-    PHOENIX_SECRET=${PHOENIX_SECRET}
+    MIX_ENV=${MIX_ENV}
 
 # By convention, /opt is typically used for applications
 WORKDIR /opt/app

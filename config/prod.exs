@@ -18,14 +18,15 @@ config :breakout_live, BreakoutLiveWeb.Endpoint,
   url: [host: "localhost", port: {:system, "PORT"}],
   server: true,
   root: ".",
+  load_from_system_env: true,
   version: Application.spec(:phoenix_distillery, :vsn),
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json",
-  secret_key_base: Map.fetch!(System.get_env(), "PHOENIX_SECRET"),
+  secret_key_base: System.get_env("SECRET_KEY_BASE"),
   check_origin: false
 
 # Do not print debug messages in production
-config :logger, level: :debug
+config :logger, level: :info
 
 # ## SSL Support
 #

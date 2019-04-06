@@ -5,20 +5,14 @@
 # is restricted to this project.
 use Mix.Config
 
-# General application configuration
-config :breakout_live,
-  ecto_repos: [BreakoutLive.Repo]
-
 # Configures the endpoint
 config :breakout_live, BreakoutLiveWeb.Endpoint,
-  url: [
-    host: System.get_env("HOSTNAME") || "localhost",
-    port: System.get_env("PORT") || 4000
-  ],
+  url: [scheme: "http", host: "localhost"],
+  http: [port: 4000],
   secret_key_base: "zlMbr9KIbSMRg9BXFBpsWgVUqeDm09NBI9124BQ8u+2R6ZRk9hcPe9iC4ciM5rZ4",
   render_errors: [view: BreakoutLiveWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: BreakoutLive.PubSub, adapter: Phoenix.PubSub.PG2],
-  live_view: [signing_salt: "NZIguRPO"]
+  live_view: [signing_salt: System.get_env("LIVE_VIEW_SALT") || "vxfMQUk2"]
 
 # Configures Elixir's Logger
 config :logger, :console,

@@ -12,36 +12,29 @@ Boilerplate taken from [here](https://github.com/chrismccord/phoenix_live_view_e
 - [x] Use coordinates of the center of the paddle?
 - [ ] Refactor everything NOT to use integer matrix coordinates, and instead compute everything inside config file?
 - [x] Transfer the project on a fresh, clean mix one (just like the guy that made the board game)
-- [ ] How to deploy?
+- [x] How to deploy?
 - [ ] Article(s) or tutorial?
 
 # Install
 
-Clone the repo.
+Clone the repo
+```bash
+$ git clone https://github.com/neslinesli93/breakoutex
+```
 
 Start the container:
 ```bash
 $ docker-compose run --service-ports app
 ```
 
-Install elixir deps:
+Install npm deps:
 ```bash
-$ mix deps.get
+$ cd assets && npm i && cd ..
 ```
 
-Setup db:
+Start server:
 ```bash
-$ mix ecto.create && mix ecto.migrate
-```
-
-Setup frontend assets:
-```bash
-$ cd assets && npm i
-```
-
-Start phoenix server:
-```bash
-$ mix phx.server
+$ ./run.sh # alias of mix deps.get && mix phx.server
 ```
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
