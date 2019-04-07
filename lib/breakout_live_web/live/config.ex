@@ -10,7 +10,7 @@ defmodule BreakoutLiveWeb.Live.Config do
       @unit 20
 
       # Available block colors inside the ascii representation of the board
-      @brick_colors ~w(r b g o p y)
+      @brick_colors ~w(r b g o p y t w)
       # Bricks length expressed in basic units
       @brick_length 3
 
@@ -22,7 +22,7 @@ defmodule BreakoutLiveWeb.Live.Config do
       # Paddle height expressed in basic units
       @paddle_height 1
       # Misc
-      @paddle_speed 10
+      @paddle_speed 5
 
       # Coordinates of the center of the ball, initially a bit above the center of the paddle
       @ball_x 13.5
@@ -35,25 +35,82 @@ defmodule BreakoutLiveWeb.Live.Config do
       @left_keys ["ArrowLeft", "a", "A"]
       @right_keys ["ArrowRight", "d", "D"]
 
-      @starting_angles [-60, -45, -30, -15, 15, 30, 45, 60]
+      @starting_angles Enum.concat([-60..-15, 15..60])
 
       # Game board represented as an ASCII matrix. Block types:
       # - X are the walls
       # - D is the floor
       # - r, b, g, o, p, y are the colors of the different blocks
+
+      # First level
+      # @brick_length 3
+      # @board [
+      #   ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 X),
+      #   ~w(X b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 X),
+      #   ~w(X g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 X),
+      #   ~w(X o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 X),
+      #   ~w(X p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 X),
+      #   ~w(X y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
+      # ]
+
+      # Second level
+      # @brick_length 3
+      # @board [
+      #   ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X r 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X b 0 0 b 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X g 0 0 g 0 0 g 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X o 0 0 o 0 0 o 0 0 o 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 0 0 0 0 0 0 X),
+      #   ~w(X t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 0 0 0 X),
+      #   ~w(X w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+      #   ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
+      # ]
+
+      # Third level
+      @brick_length 2
       @board [
         ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
         ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
         ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-        ~w(X r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 X),
-        ~w(X b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 X),
-        ~w(X g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 X),
-        ~w(X o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 X),
-        ~w(X p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 X),
-        ~w(X y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 X),
         ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+        ~w(X 0 0 0 0 0 0 0 0 0 0 p 0 p 0 p 0 0 0 0 0 0 0 0 0 X),
+        ~w(X 0 0 0 0 0 0 0 0 p 0 b 0 b 0 b 0 p 0 0 0 0 0 0 0 X),
+        ~w(X p 0 0 0 0 0 p 0 b 0 b 0 b 0 b 0 b 0 p 0 p 0 0 0 X),
+        ~w(X b 0 p 0 p 0 b 0 b 0 t 0 t 0 t 0 b 0 b 0 b 0 p 0 X),
+        ~w(X b 0 b 0 b 0 b 0 t 0 w 0 w 0 w 0 t 0 b 0 b 0 b 0 X),
+        ~w(X t 0 b 0 b 0 t 0 w 0 0 0 0 0 0 0 w 0 t 0 t 0 b 0 X),
+        ~w(X w 0 t 0 t 0 w 0 0 0 0 0 0 0 0 0 0 0 w 0 w 0 t 0 X),
+        ~w(X 0 0 w 0 w 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 w 0 X),
         ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
         ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
         ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
@@ -65,6 +122,7 @@ defmodule BreakoutLiveWeb.Live.Config do
         ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
         ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
       ]
+
       @board_rows length(@board)
       @board_cols length(hd(@board))
 

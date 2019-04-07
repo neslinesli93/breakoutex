@@ -1,12 +1,5 @@
-@import url(https://fonts.googleapis.com/css?family=Press+Start+2P);
-
-html {
-  overflow-x:hidden;
-  background: black;
-}
-
 .container {
-  padding: 6rem 0 0 0;
+  padding: 1rem 0 0 0;
 }
 
 .game-container {

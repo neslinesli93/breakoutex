@@ -86,4 +86,6 @@ defmodule BreakoutLiveWeb.Live.Blocks do
   defp get_color("y"), do: "yellow"
   defp get_color("o"), do: "orange"
   defp get_color("p"), do: "purple"
+  defp get_color("t"), do: "turquoise"
+  defp get_color("w"), do: "white"
 end
