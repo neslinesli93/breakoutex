@@ -3,10 +3,12 @@ defmodule BreakoutLiveWeb.Live.Blocks do
 
   alias BreakoutLiveWeb.Live.Helpers
 
-  @spec build_board(number, number) :: [map]
-  def build_board(width, height) do
+  @spec build_board(number, number, number) :: [map]
+  def build_board(level, width, height) do
+    %{grid: grid, brick_length: brick_length} = Enum.at(@levels, level)
+
     {_, blocks} =
-      Enum.reduce(@board, {0, []}, fn row, {y_idx, acc} ->
+      Enum.reduce(grid, {0, []}, fn row, {y_idx, acc} ->
         {_, blocks} =
           Enum.reduce(row, {0, acc}, fn
             "X", {x_idx, acc} ->
@@ -19,7 +21,7 @@ defmodule BreakoutLiveWeb.Live.Blocks do
               {x_idx + 1, [floor(x_idx, y_idx, width, height) | acc]}
 
             b, {x_idx, acc} when b in @brick_colors ->
-              {x_idx + 1, [brick(b, x_idx, y_idx, width, height) | acc]}
+              {x_idx + 1, [brick(b, brick_length, x_idx, y_idx, width, height) | acc]}
           end)
 
         {y_idx + 1, blocks}
@@ -28,10 +30,10 @@ defmodule BreakoutLiveWeb.Live.Blocks do
     blocks
   end
 
-  @spec build_bricks(number, number) :: [map]
-  def build_bricks(width, height) do
-    width
-    |> build_board(height)
+  @spec build_bricks(number, number, number) :: [map]
+  def build_bricks(level, width, height) do
+    level
+    |> build_board(width, height)
     |> Enum.filter(&(&1.type == :brick))
   end
 
@@ -65,17 +67,17 @@ defmodule BreakoutLiveWeb.Live.Blocks do
     }
   end
 
-  defp brick(color, x_idx, y_idx, width, height) do
+  defp brick(color, brick_length, x_idx, y_idx, width, height) do
     %{
       type: :brick,
       color: get_color(color),
-      width: width * @brick_length,
+      width: width * brick_length,
       height: height,
       id: UUID.uuid4(),
       visible: true,
       left: Helpers.coordinate(x_idx, width),
       top: Helpers.coordinate(y_idx, height),
-      right: Helpers.coordinate(x_idx, width) + width * @brick_length,
+      right: Helpers.coordinate(x_idx, width) + width * brick_length,
       bottom: Helpers.coordinate(y_idx, height) + height
     }
   end

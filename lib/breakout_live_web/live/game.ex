@@ -14,8 +14,8 @@ defmodule BreakoutLiveWeb.Live.Game do
     socket =
       socket
       |> assign(state)
-      |> assign(:blocks, Blocks.build_board(state.unit, state.unit))
-      |> assign(:bricks, Blocks.build_bricks(state.unit, state.unit))
+      |> assign(:blocks, Blocks.build_board(state.level, state.unit, state.unit))
+      |> assign(:bricks, Blocks.build_bricks(state.level, state.unit, state.unit))
 
     if connected?(socket) do
       {:ok, schedule_tick(socket)}
@@ -166,27 +166,28 @@ defmodule BreakoutLiveWeb.Live.Game do
     @ball_speed * (point_x - (paddle_x + @paddle_length * unit / 2)) / (@paddle_length * unit / 2)
   end
 
-  defp check_lost(%{assigns: %{ball: ball, unit: unit}} = socket) do
+  defp check_lost(%{assigns: %{ball: ball, unit: unit, lives_lost: lives_lost}} = socket) do
     if ball.y + ball.dy + ball.radius >= (@board_rows - 1) * unit do
       socket
       |> assign(initial_state())
+      |> assign(:lives_lost, lives_lost + 1)
     else
       socket
     end
   end
 
-  defp check_victory(%{assigns: %{bricks: bricks}} = socket) do
+  defp check_victory(%{assigns: %{bricks: bricks, level: level}} = socket) do
     bricks
     |> Enum.filter(&(&1.visible == true))
     |> Enum.count()
     |> case do
       0 ->
-        state = initial_state()
+        state = Map.put(initial_state(), :level, level + 1)
 
         socket
         |> assign(state)
-        |> assign(:blocks, Blocks.build_board(state.unit, state.unit))
-        |> assign(:bricks, Blocks.build_bricks(state.unit, state.unit))
+        |> assign(:blocks, Blocks.build_board(state.level, state.unit, state.unit))
+        |> assign(:bricks, Blocks.build_bricks(state.level, state.unit, state.unit))
 
       _ ->
         socket

@@ -11,8 +11,6 @@ defmodule BreakoutLiveWeb.Live.Config do
 
       # Available block colors inside the ascii representation of the board
       @brick_colors ~w(r b g o p y t w)
-      # Bricks length expressed in basic units
-      @brick_length 3
 
       # Coordinates of the top-left vertex of the paddle. They are relative to the board matrix
       @paddle_left 11
@@ -37,99 +35,132 @@ defmodule BreakoutLiveWeb.Live.Config do
 
       @starting_angles Enum.concat([-60..-15, 15..60])
 
-      # Game board represented as an ASCII matrix. Block types:
+      @board_rows 21
+      @board_cols 26
+
+      # Game board is represented as an ASCII matrix. Block types:
       # - X are the walls
       # - D is the floor
-      # - r, b, g, o, p, y are the colors of the different blocks
-
-      # First level
-      # @brick_length 3
-      # @board [
-      #   ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 X),
-      #   ~w(X b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 X),
-      #   ~w(X g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 X),
-      #   ~w(X o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 X),
-      #   ~w(X p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 X),
-      #   ~w(X y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
-      # ]
-
-      # Second level
-      # @brick_length 3
-      # @board [
-      #   ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X r 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X b 0 0 b 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X g 0 0 g 0 0 g 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X o 0 0 o 0 0 o 0 0 o 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 0 0 0 0 0 0 X),
-      #   ~w(X t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 0 0 0 X),
-      #   ~w(X w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-      #   ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
-      # ]
-
-      # Third level
-      @brick_length 2
-      @board [
-        ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 p 0 p 0 0 0 0 0 0 0 0 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 p 0 b 0 b 0 p 0 0 0 0 0 0 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 p 0 b 0 b 0 b 0 b 0 p 0 0 0 0 0 X),
-        ~w(X p 0 0 0 0 0 p 0 b 0 b 0 t 0 t 0 b 0 b 0 p 0 0 0 X),
-        ~w(X b 0 p 0 p 0 b 0 b 0 t 0 w 0 w 0 t 0 b 0 b 0 p 0 X),
-        ~w(X b 0 b 0 b 0 b 0 t 0 w 0 0 0 0 0 w 0 t 0 b 0 b 0 X),
-        ~w(X t 0 b 0 b 0 t 0 w 0 0 0 0 0 0 0 0 0 w 0 t 0 b 0 X),
-        ~w(X w 0 t 0 t 0 w 0 0 0 0 0 0 0 0 0 0 0 0 0 w 0 t 0 X),
-        ~w(X 0 0 w 0 w 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 w 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-        ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-        ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
+      # - r, b, g, o, p, y, t, w are the colors of the different blocks
+      #
+      # Brick length is expressed in basic units
+      @levels [
+        %{
+          brick_length: 3,
+          grid: [
+            ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 X),
+            ~w(X b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 X),
+            ~w(X g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 X),
+            ~w(X o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 X),
+            ~w(X p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 X),
+            ~w(X y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
+          ]
+        },
+        %{
+          brick_length: 3,
+          grid: [
+            ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X r 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X b 0 0 b 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X g 0 0 g 0 0 g 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X o 0 0 o 0 0 o 0 0 o 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 0 0 0 0 0 0 X),
+            ~w(X t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 0 0 0 X),
+            ~w(X w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
+          ]
+        },
+        %{
+          brick_length: 2,
+          grid: [
+            ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 p 0 p 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 p 0 b 0 b 0 p 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 p 0 b 0 b 0 b 0 b 0 p 0 0 0 0 0 X),
+            ~w(X p 0 0 0 0 0 p 0 b 0 b 0 t 0 t 0 b 0 b 0 p 0 0 0 X),
+            ~w(X b 0 p 0 p 0 b 0 b 0 t 0 w 0 w 0 t 0 b 0 b 0 p 0 X),
+            ~w(X b 0 b 0 b 0 b 0 t 0 w 0 0 0 0 0 w 0 t 0 b 0 b 0 X),
+            ~w(X t 0 b 0 b 0 t 0 w 0 0 0 0 0 0 0 0 0 w 0 t 0 b 0 X),
+            ~w(X w 0 t 0 t 0 w 0 0 0 0 0 0 0 0 0 0 0 0 0 w 0 t 0 X),
+            ~w(X 0 0 w 0 w 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 w 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
+          ]
+        },
+        %{
+          brick_length: 0,
+          grid: [
+            ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+            ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
+          ]
+        }
       ]
-
-      @board_rows length(@board)
-      @board_cols length(hd(@board))
 
       defp initial_state() do
         %{
           game_state: :wait,
           tick: @tick,
+          level: 0,
+          lives_lost: 0,
           # Basic unit for measuring blocks size
           unit: @unit,
           board_rows: @board_rows,
