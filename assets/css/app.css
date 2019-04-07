@@ -10,6 +10,10 @@ html {
   background: #292a2d;
 }
 
+body {
+  margin: 0;
+}
+
 header {
   background: #252627;
   display: flex;
@@ -24,9 +28,17 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 80%;
 }
 
 .header__inner a {
   text-decoration: none;
   color: #a9a9b3;
+  line-height: 1;
+}
+
+.header__right {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
