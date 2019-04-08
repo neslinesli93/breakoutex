@@ -1,5 +1,6 @@
+<div phx-keydown="keydown" phx-keyup="keyup" phx-target="window">
 <%= if @game_state == :welcome do %>
-    <div class="welcome-container" phx-keydown="keydown" phx-target="window">
+    <div class="welcome-container">
         <p>BreakoutEx is a breakout clone written in pure Elixir, using
             <a href="https://github.com/phoenixframework/phoenix_live_view" target="_blank">
                 Phoenix LiveView.
@@ -11,13 +12,15 @@
         </p>
         <p>
             The actual render is done under the hood by
-            <a href="https://github.com/patrick-steele-idem/morphdom" target="_blank">
-                morphdom
-            </a>
-            , a powerful DOM diffing library.
+            <a href="https://github.com/patrick-steele-idem/morphdom" target="_blank">morphdom</a>,
+            a powerful DOM diffing library.
         </p>
-        <p>
+        <p class="start-play">
             Press <span class="controls">spacebar</span> to start
+        </p>
+        <p class="no-mobile">
+            Unfortunately, mobile devices are not supported at the moment. Please switch to a desktop
+            in order to be able to play the game.</p>
         </p>
     </div>
 <% end %>
@@ -39,7 +42,7 @@
         </div>
     </div>
 
-    <div class="game-container" phx-keydown="keydown" phx-keyup="keyup" phx-target="window">
+    <div class="game-container">
         <%= if @game_state == :wait do %>
             <div class="help-container">
                 Press <span class="controls">spacebar</span> to start playing.
@@ -77,3 +80,4 @@
         <% end %>
     </div>
 <% end %>
+</div>
