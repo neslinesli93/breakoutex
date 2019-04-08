@@ -11,6 +11,11 @@
 
 .info-container {
   color: #a9a9b3;
+  padding-bottom: 1.5rem;
+}
+
+.info-container .separator {
+  margin: 0 0.5rem;
 }
 
 .game-container .block{

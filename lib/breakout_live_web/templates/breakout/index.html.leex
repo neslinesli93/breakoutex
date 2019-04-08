@@ -1,6 +1,8 @@
 <div class="info-container">
     <div class="score">
-        Level: <%= @level + 1 %> | Lives lost: <%= @lives_lost %>
+        <span class="level">Level: <%= @level + 1 %></span>
+        <span class="separator"> | </span>
+        <span class="lives">Lost lives: <%= @lost_lives %></span>
     </div>
 </div>
 <div class="game-container" phx-keydown="keydown" phx-keyup="keyup" phx-target="window">
