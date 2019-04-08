@@ -76,12 +76,12 @@ defmodule BreakoutLiveWeb.Live.Game do
   defp ball_horizontal(x, dx, r, u) when x + dx - r < u, do: -dx
   defp ball_horizontal(_x, dx, _r, _u), do: dx
 
-  defp ball_vertical(y, dy, r, u) when y + dy + r > (@board_rows - 1) * u, do: -dy
+  defp ball_vertical(y, dy, r, u) when y + dy + r > @board_rows * u, do: -dy
   defp ball_vertical(y, dy, r, u) when y + dy - r < u, do: -dy
   defp ball_vertical(_y, dy, _r, _u), do: dy
 
   # Compute the closest point of intersection, if any, between the ball and obstacles (bricks and paddle)
-  # and proceeds to
+  # and proceed to
   defp check_collision(
          %{assigns: %{bricks: bricks, ball: ball, paddle: paddle, unit: unit}} = socket
        ) do
@@ -126,7 +126,7 @@ defmodule BreakoutLiveWeb.Live.Game do
           }
         )
 
-      # Match every other brick + the paddle from the sides
+      # Match every other brick OR the paddle from the sides
       %{block: block, point: point} ->
         socket
         |> assign(:bricks, hide_brick(bricks, block.id))
@@ -166,32 +166,47 @@ defmodule BreakoutLiveWeb.Live.Game do
     @ball_speed * (point_x - (paddle_x + @paddle_length * unit / 2)) / (@paddle_length * unit / 2)
   end
 
-  defp check_lost(%{assigns: %{ball: ball, unit: unit, lives_lost: lives_lost}} = socket) do
-    if ball.y + ball.dy + ball.radius >= (@board_rows - 1) * unit do
+  defp check_lost(%{assigns: %{ball: ball, unit: unit, lost_lives: lost_lives}} = socket) do
+    if ball.y + ball.dy + ball.radius >= @board_rows * unit do
       socket
-      |> assign(initial_state())
-      |> assign(:lives_lost, lives_lost + 1)
+      |> assign(:game_state, :wait)
+      |> assign(:paddle, initial_paddle_state())
+      |> assign(:ball, initial_ball_state())
+      |> assign(:lost_lives, lost_lives + 1)
     else
       socket
     end
   end
 
-  defp check_victory(%{assigns: %{bricks: bricks, level: level}} = socket) do
+  defp check_victory(%{assigns: %{bricks: bricks, level: level, unit: unit}} = socket) do
     bricks
     |> Enum.filter(&(&1.visible == true))
     |> Enum.count()
     |> case do
       0 ->
-        state = Map.put(initial_state(), :level, level + 1)
-
         socket
-        |> assign(state)
-        |> assign(:blocks, Blocks.build_board(state.level, state.unit, state.unit))
-        |> assign(:bricks, Blocks.build_bricks(state.level, state.unit, state.unit))
+        |> assign(:level, level + 1)
+        |> next_level()
 
       _ ->
         socket
     end
+  end
+
+  defp next_level(%{assigns: %{level: level, unit: unit}} = socket) when level < @levels_no do
+    socket
+    |> assign(:game_state, :wait)
+    |> assign(:paddle, initial_paddle_state())
+    |> assign(:ball, initial_ball_state())
+    |> assign(:blocks, Blocks.build_board(level, unit, unit))
+    |> assign(:bricks, Blocks.build_bricks(level, unit, unit))
+  end
+
+  defp next_level(%{assigns: %{ball: ball}} = socket) do
+    socket
+    |> assign(:game_state, :finish)
+    |> assign(:level, @levels_no - 1)
+    |> assign(:ball, %{ball | dx: 0, dy: 0})
   end
 
   # Handle keydown events
@@ -219,8 +234,7 @@ defmodule BreakoutLiveWeb.Live.Game do
   defp on_stop_input(socket, _), do: socket
 
   # Start moving the ball up, in a random horizontal direction
-  defp start_game(%{assigns: %{game_state: state, ball: ball}} = socket)
-       when state in [:wait, :over] do
+  defp start_game(%{assigns: %{game_state: state, ball: ball}} = socket) when state == :wait do
     socket
     |> assign(:game_state, :playing)
     |> assign(

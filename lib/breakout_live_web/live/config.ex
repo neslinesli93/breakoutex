@@ -125,80 +125,63 @@ defmodule BreakoutLiveWeb.Live.Config do
             ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
             ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
           ]
-        },
-        %{
-          brick_length: 0,
-          grid: [
-            ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
-          ]
         }
       ]
+
+      @levels_no length(@levels)
 
       defp initial_state() do
         %{
           game_state: :wait,
           tick: @tick,
           level: 0,
-          lives_lost: 0,
+          lost_lives: 0,
           # Basic unit for measuring blocks size
           unit: @unit,
           board_rows: @board_rows,
           board_cols: @board_cols,
-          paddle: %{
-            width: @paddle_length * @unit,
-            height: @paddle_height * @unit,
-            # Coordinates of the box surrounding the paddle
-            left: Helpers.coordinate(@paddle_left, @unit),
-            top: Helpers.coordinate(@paddle_top, @unit),
-            right: Helpers.coordinate(@paddle_left + @paddle_length, @unit),
-            bottom: Helpers.coordinate(@paddle_top + @paddle_height, @unit),
-            # Add some fields for compatibility with bricks
-            id: UUID.uuid4(),
-            type: :paddle,
-            visible: true,
-            # Misc
-            direction: :stationary,
-            speed: @paddle_speed,
-            length: @paddle_length
-          },
-          ball: %{
-            radius: @ball_radius,
-            # Coordinates of the center
-            x: Helpers.coordinate(@ball_x, @unit),
-            y: Helpers.coordinate(@ball_y, @unit),
-            # Movement of the ball in the two axis
-            dx: 0,
-            dy: 0,
-            # Box surrounding the ball. We don't need all the coordinates, since we just use
-            # the top-left vertex for drawing
-            left: Helpers.coordinate(@ball_x, @unit) - @ball_radius,
-            top: Helpers.coordinate(@ball_y, @unit) - @ball_radius,
-            width: 2 * @ball_radius,
-            height: 2 * @ball_radius,
-            # Misc
-            speed: @ball_speed
-          }
+          paddle: initial_paddle_state(),
+          ball: initial_ball_state()
+        }
+      end
+
+      defp initial_paddle_state() do
+        %{
+          width: @paddle_length * @unit,
+          height: @paddle_height * @unit,
+          # Coordinates of the box surrounding the paddle
+          left: Helpers.coordinate(@paddle_left, @unit),
+          top: Helpers.coordinate(@paddle_top, @unit),
+          right: Helpers.coordinate(@paddle_left + @paddle_length, @unit),
+          bottom: Helpers.coordinate(@paddle_top + @paddle_height, @unit),
+          # Add some fields for compatibility with bricks
+          id: UUID.uuid4(),
+          type: :paddle,
+          visible: true,
+          # Misc
+          direction: :stationary,
+          speed: @paddle_speed,
+          length: @paddle_length
+        }
+      end
+
+      defp initial_ball_state() do
+        %{
+          radius: @ball_radius,
+          # Coordinates of the center
+          x: Helpers.coordinate(@ball_x, @unit),
+          y: Helpers.coordinate(@ball_y, @unit),
+          # Movement of the ball in the two axis
+          dx: 0,
+          dy: 0,
+          # Box surrounding the ball. We don't need all the coordinates, since we just use
+          # the top-left vertex for drawing
+          left: Helpers.coordinate(@ball_x, @unit) - @ball_radius,
+          top: Helpers.coordinate(@ball_y, @unit) - @ball_radius,
+          width: 2 * @ball_radius,
+          height: 2 * @ball_radius,
+          # Misc
+          speed: @ball_speed
         }
       end
     end
