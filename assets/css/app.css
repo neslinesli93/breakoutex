@@ -8,10 +8,22 @@
 html {
   overflow-x:hidden;
   background: #292a2d;
+  color: #a9a9b3;
 }
 
 body {
   margin: 0;
+}
+
+a {
+  text-decoration: none;
+  line-height: 1;
+  color: #a9a9b3;
+  font-weight: 700;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 header {
@@ -32,14 +44,17 @@ header {
   width: 80%;
 }
 
-.header__inner a {
+.header__inner a:hover {
   text-decoration: none;
   color: #a9a9b3;
-  line-height: 1;
 }
 
 .header__right {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.container {
+  padding: 0;
 }

@@ -1,37 +1,79 @@
-<div class="info-container">
-    <div class="score">
-        <span class="level">Level: <%= @level + 1 %></span>
-        <span class="separator"> | </span>
-        <span class="lives">Lost lives: <%= @lost_lives %></span>
+<%= if @game_state == :welcome do %>
+    <div class="welcome-container" phx-keydown="keydown" phx-target="window">
+        <p>BreakoutEx is a breakout clone written in pure Elixir, using
+            <a href="https://github.com/phoenixframework/phoenix_live_view" target="_blank">
+                Phoenix LiveView.
+            </a>
+        </p>
+        <p>
+            The game state is kept entirely on the server, and updates are pushed through
+            a Phoenix websocket.
+        </p>
+        <p>
+            The actual render is done under the hood by
+            <a href="https://github.com/patrick-steele-idem/morphdom" target="_blank">
+                morphdom
+            </a>
+            , a powerful DOM diffing library.
+        </p>
+        <p>
+            Press <span class="controls">spacebar</span> to start
+        </p>
     </div>
-</div>
-<div class="game-container" phx-keydown="keydown" phx-keyup="keyup" phx-target="window">
-    <div class="block ball"
-        style="left: <%= @ball.x - @ball.radius %>px;
-            top: <%= @ball.y - @ball.radius %>px;
-            width: <%= @ball.width %>px;
-            height: <%= @ball.height %>px; "></div>
+<% end %>
 
-    <div class="block paddle"
-        style="left: <%= @paddle.left %>px;
-        top: <%= @paddle.top %>px;
-        width: <%= @paddle.width %>px;
-        height: <%= @paddle.height %>px; "></div>
+<%= if @game_state == :finish do %>
+    <div class="victory-container">
+        <h3>Contratulations, you completed the game!</h3>
 
-    <%= for block <- @blocks, block.type in [:wall, :floor] do %>
-    <div class="block <%= block.type %>"
-        style="left: <%= block.left %>px;
-                top: <%= block.top %>px;
-                width: <%= block.width %>px;
-                height: <%= block.height %>px; "></div>
-    <% end %>
+        <p>And you did that with just <%= @lost_lives %> lost lives. Impressive!</p>
+    </div>
+<% end %>
 
-    <%= for brick <- @bricks, brick.visible == true do %>
-    <div class="block brick"
-        style="left: <%= brick.left %>px;
-                top: <%= brick.top %>px;
-                width: <%= brick.width %>px;
-                height: <%= brick.height %>px;
-                background: <%= Map.fetch!(brick, :color) %>; "></div>
-    <% end %>
-</div>
+<%= if @game_state in [:wait, :playing] do %>
+    <div class="info-container">
+        <div class="score">
+            <span class="level">Level: <%= @level + 1 %></span>
+            <span class="separator"> | </span>
+            <span class="lives">Lost lives: <%= @lost_lives %></span>
+        </div>
+    </div>
+
+    <div class="game-container" phx-keydown="keydown" phx-keyup="keyup" phx-target="window">
+        <%= if @game_state == :wait do %>
+            <div class="help-container">
+                Press <span class="controls">spacebar</span> to start playing.
+                <span class="controls">WASD</span> or <span class="controls">↑←↓→</span> to move the paddle.
+            </div>
+        <% end %>
+
+        <div class="block ball"
+            style="left: <%= @ball.x - @ball.radius %>px;
+                top: <%= @ball.y - @ball.radius %>px;
+                width: <%= @ball.width %>px;
+                height: <%= @ball.height %>px; "></div>
+
+        <div class="block paddle"
+            style="left: <%= @paddle.left %>px;
+            top: <%= @paddle.top %>px;
+            width: <%= @paddle.width %>px;
+            height: <%= @paddle.height %>px; "></div>
+
+        <%= for block <- @blocks, block.type in [:wall, :floor] do %>
+        <div class="block <%= block.type %>"
+            style="left: <%= block.left %>px;
+                    top: <%= block.top %>px;
+                    width: <%= block.width %>px;
+                    height: <%= block.height %>px; "></div>
+        <% end %>
+
+        <%= for brick <- @bricks, brick.visible == true do %>
+        <div class="block brick"
+            style="left: <%= brick.left %>px;
+                    top: <%= brick.top %>px;
+                    width: <%= brick.width %>px;
+                    height: <%= brick.height %>px;
+                    background: <%= Map.fetch!(brick, :color) %>; "></div>
+        <% end %>
+    </div>
+<% end %>

@@ -1,5 +1,15 @@
-.container {
-  padding: 0;
+.welcome-container {
+  margin: 6rem 12rem 12rem 12rem;
+}
+
+.welcome-container p:last-child {
+  text-align: center;
+  padding-top: 4rem;
+}
+
+.controls {
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
 .info-container,
@@ -10,12 +20,18 @@
 }
 
 .info-container {
-  color: #a9a9b3;
   padding-bottom: 1.5rem;
 }
 
 .info-container .separator {
   margin: 0 0.5rem;
+}
+
+.help-container {
+  position: absolute;
+  left: 60px;
+  top: 320px;
+  font-size: 14px;
 }
 
 .game-container .block{
@@ -44,4 +60,9 @@
   border-style: solid;
   border-color: gray;
   border-width: 1px;
+}
+
+.victory-container {
+  text-align: center;
+  margin: 12rem;
 }

@@ -233,6 +233,11 @@ defmodule BreakoutLiveWeb.Live.Game do
 
   defp on_stop_input(socket, _), do: socket
 
+  defp start_game(%{assigns: %{game_state: state, ball: ball}} = socket) when state == :welcome do
+    socket
+    |> assign(:game_state, :wait)
+  end
+
   # Start moving the ball up, in a random horizontal direction
   defp start_game(%{assigns: %{game_state: state, ball: ball}} = socket) when state == :wait do
     socket

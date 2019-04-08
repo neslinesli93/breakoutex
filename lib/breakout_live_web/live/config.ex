@@ -132,7 +132,7 @@ defmodule BreakoutLiveWeb.Live.Config do
 
       defp initial_state() do
         %{
-          game_state: :wait,
+          game_state: :welcome,
           tick: @tick,
           level: 0,
           lost_lives: 0,
