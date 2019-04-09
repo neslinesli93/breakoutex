@@ -49,9 +49,10 @@
 
 .help-container {
   position: absolute;
-  left: 60px;
+  left: 56px;
   top: 320px;
   font-size: 14px;
+  max-width: 440px;
 }
 
 .game-container .block{

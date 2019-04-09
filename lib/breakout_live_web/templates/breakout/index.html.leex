@@ -29,7 +29,14 @@
     <div class="victory-container">
         <h3>Contratulations, you completed the game!</h3>
 
-        <p>And you did that with just <%= @lost_lives %> lost lives. Impressive!</p>
+        <%= case @lost_lives do %>
+        <% 0 -> %>
+        <p>And you did that without losing a life. Impressive!</p>
+        <% 1 -> %>
+        <p>And you did that while losing a single life. Impressive!</p>
+        <% _ -> %>
+        <p>And you did that with just <%= @lost_lives %> lost lives. Awesome!</p>
+        <% end %>
     </div>
 <% end %>
 
