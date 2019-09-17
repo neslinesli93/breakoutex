@@ -86,9 +86,7 @@ defmodule BreakoutLiveWeb.Live.Game do
   defp ball_vertical(_y, dy, _r, _u), do: dy
 
   # Compute the closest point of intersection, if any, between the ball and obstacles (bricks and paddle)
-  defp check_collision(
-         %{assigns: %{bricks: bricks, ball: ball, paddle: paddle, unit: unit}} = socket
-       ) do
+  defp check_collision(%{assigns: %{bricks: bricks, ball: ball, paddle: paddle, unit: unit}} = socket) do
     [paddle | bricks]
     |> Enum.filter(& &1.visible)
     |> Enum.reduce(nil, fn block, acc ->
