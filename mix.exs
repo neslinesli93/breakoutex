@@ -10,7 +10,12 @@ defmodule BreakoutLive.Mixfile do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      dialyzer: [
+        plt_add_apps: [:mix],
+        plt_add_deps: :transitive,
+        ignore_warnings: ".dialyzerignore"
+      ]
     ]
   end
 
@@ -50,7 +55,8 @@ defmodule BreakoutLive.Mixfile do
       {:plug_cowboy, "~> 2.0"},
       {:postgrex, ">= 0.0.0"},
       {:tzdata, "~> 1.0.0-rc.1", override: true},
-      {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false}
     ]
   end
 
@@ -62,6 +68,11 @@ defmodule BreakoutLive.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
+      check: [
+        "format --check-formatted mix.exs 'lib/**/*.{ex,exs}' 'test/**/*.{ex,exs}' 'config/*.{ex,exs}'",
+        "credo -a",
+        "dialyzer --halt-exit-status"
+      ],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "format.all": ["format mix.exs 'lib/**/*.{ex,exs}' 'test/**/*.{ex,exs}' 'config/*.{ex,exs}'"],
