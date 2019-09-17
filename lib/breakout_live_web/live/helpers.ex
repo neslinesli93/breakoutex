@@ -1,4 +1,8 @@
 defmodule BreakoutLiveWeb.Live.Helpers do
+  @moduledoc """
+  Various helper functions
+  """
+
   use BreakoutLiveWeb.Live.Config
 
   # Multiply an integer coordinate for a length, giving

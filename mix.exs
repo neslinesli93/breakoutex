@@ -64,6 +64,7 @@ defmodule BreakoutLive.Mixfile do
     [
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
+      "format.all": ["format mix.exs 'lib/**/*.{ex,exs}' 'test/**/*.{ex,exs}' 'config/*.{ex,exs}'"],
       test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end

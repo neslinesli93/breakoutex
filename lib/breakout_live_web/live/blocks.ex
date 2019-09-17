@@ -1,4 +1,9 @@
 defmodule BreakoutLiveWeb.Live.Blocks do
+  @moduledoc """
+  Module that contains the definitions of all the block types:
+  bricks, paddle, etc
+  """
+
   use BreakoutLiveWeb.Live.Config
 
   alias BreakoutLiveWeb.Live.Helpers

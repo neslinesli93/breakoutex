@@ -1,7 +1,12 @@
 defmodule BreakoutLiveWeb.Live.Config do
+  @moduledoc """
+  Module that holds all the constants and initial state of the game
+  """
+
   alias BreakoutLiveWeb.Live.Helpers
 
   defmacro __using__(_) do
+    # credo:disable-for-next-line Credo.Check.Refactor.LongQuoteBlocks
     quote do
       # Time in ms that schedules the game loop
       @tick 16

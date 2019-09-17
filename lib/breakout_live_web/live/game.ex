@@ -1,4 +1,9 @@
 defmodule BreakoutLiveWeb.Live.Game do
+  @moduledoc """
+  Main module, contains the entry point for the live view socket and
+  all the game logic
+  """
+
   use Phoenix.LiveView
   use BreakoutLiveWeb.Live.Config
 
@@ -61,8 +66,8 @@ defmodule BreakoutLiveWeb.Live.Game do
     new_dx = ball_horizontal(ball.x, ball.dx, ball.radius, unit)
     new_dy = ball_vertical(ball.y, ball.dy, ball.radius, unit)
 
-    socket
-    |> assign(
+    assign(
+      socket,
       :ball,
       %{ball | dx: new_dx, dy: new_dy}
       |> update_in([:x], &(&1 + new_dx))
@@ -81,11 +86,9 @@ defmodule BreakoutLiveWeb.Live.Game do
   defp ball_vertical(_y, dy, _r, _u), do: dy
 
   # Compute the closest point of intersection, if any, between the ball and obstacles (bricks and paddle)
-  # and proceed to
   defp check_collision(
          %{assigns: %{bricks: bricks, ball: ball, paddle: paddle, unit: unit}} = socket
        ) do
-    # Add fields to paddle so that it has the same shape of bricks
     [paddle | bricks]
     |> Enum.filter(& &1.visible)
     |> Enum.reduce(nil, fn block, acc ->
@@ -97,13 +100,7 @@ defmodule BreakoutLiveWeb.Live.Game do
           build_closest(block, p, ball)
 
         {p, %{distance: distance}} ->
-          new_distance = Engine.compute_distance({p.x, p.y}, {ball.x, ball.y})
-
-          if new_distance < distance do
-            build_closest(block, p, ball)
-          else
-            acc
-          end
+          maybe_build_closest(block, acc, p, ball, distance)
       end
     end)
     |> case do
@@ -112,8 +109,8 @@ defmodule BreakoutLiveWeb.Live.Game do
 
       # Match the paddle
       %{block: %{type: :paddle}, point: %{direction: :top} = point} ->
-        socket
-        |> assign(
+        assign(
+          socket,
           :ball,
           %{
             ball
@@ -145,13 +142,24 @@ defmodule BreakoutLiveWeb.Live.Game do
     end
   end
 
+  defp maybe_build_closest(new_block, curr_block, p, ball, curr_distance) do
+    new_distance = Engine.compute_distance({p.x, p.y}, {ball.x, ball.y})
+
+    if new_distance < curr_distance do
+      build_closest(new_block, p, ball)
+    else
+      curr_block
+    end
+  end
+
   defp build_closest(block, p, ball) do
     %{block: block, point: p, distance: Engine.compute_distance({p.x, p.y}, {ball.x, ball.y})}
   end
 
   defp hide_brick(blocks, id) do
-    update_in(blocks, [Access.filter(&(&1.id == id and &1.type == :brick)), :visible], fn
-      _ -> false
+    Enum.map(blocks, fn
+      %{id: ^id, type: :brick} = block -> %{block | visible: false}
+      b -> b
     end)
   end
 
@@ -178,7 +186,7 @@ defmodule BreakoutLiveWeb.Live.Game do
     end
   end
 
-  defp check_victory(%{assigns: %{bricks: bricks, level: level, unit: unit}} = socket) do
+  defp check_victory(%{assigns: %{bricks: bricks, level: level}} = socket) do
     bricks
     |> Enum.filter(&(&1.visible == true))
     |> Enum.count()
@@ -233,13 +241,12 @@ defmodule BreakoutLiveWeb.Live.Game do
 
   defp on_stop_input(socket, _), do: socket
 
-  defp start_game(%{assigns: %{game_state: state, ball: ball}} = socket) when state == :welcome do
-    socket
-    |> assign(:game_state, :wait)
+  defp start_game(%{assigns: %{game_state: :welcome}} = socket) do
+    assign(socket, :game_state, :wait)
   end
 
   # Start moving the ball up, in a random horizontal direction
-  defp start_game(%{assigns: %{game_state: state, ball: ball}} = socket) when state == :wait do
+  defp start_game(%{assigns: %{game_state: :wait, ball: ball}} = socket) do
     socket
     |> assign(:game_state, :playing)
     |> assign(
@@ -254,15 +261,13 @@ defmodule BreakoutLiveWeb.Live.Game do
     if paddle.direction == direction do
       socket
     else
-      socket
-      |> assign(:paddle, %{paddle | direction: direction})
+      assign(socket, :paddle, %{paddle | direction: direction})
     end
   end
 
   defp stop_paddle(%{assigns: %{paddle: paddle}} = socket, direction) do
     if paddle.direction == direction do
-      socket
-      |> assign(:paddle, %{paddle | direction: :stationary})
+      assign(socket, :paddle, %{paddle | direction: :stationary})
     else
       socket
     end
@@ -275,15 +280,21 @@ defmodule BreakoutLiveWeb.Live.Game do
   defp do_advance_paddle(%{assigns: %{paddle: paddle, unit: unit}} = socket, :left) do
     new_left = max(unit, paddle.left - paddle.speed)
 
-    socket
-    |> assign(:paddle, %{paddle | left: new_left, right: paddle.right - (paddle.left - new_left)})
+    assign(socket, :paddle, %{
+      paddle
+      | left: new_left,
+        right: paddle.right - (paddle.left - new_left)
+    })
   end
 
   defp do_advance_paddle(%{assigns: %{paddle: paddle, unit: unit}} = socket, :right) do
     new_left = min(paddle.left + paddle.speed, unit * (@board_cols - paddle.length - 1))
 
-    socket
-    |> assign(:paddle, %{paddle | left: new_left, right: paddle.right + (new_left - paddle.left)})
+    assign(socket, :paddle, %{
+      paddle
+      | left: new_left,
+        right: paddle.right + (new_left - paddle.left)
+    })
   end
 
   defp do_advance_paddle(socket, :stationary), do: socket

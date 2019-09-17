@@ -1,13 +1,17 @@
 defmodule BreakoutLiveWeb.Live.Engine do
-  defmodule BreakoutLiveWeb.Live.Engine.HitPoint do
-    defstruct [:x, :y, :direction]
-  end
+  @moduledoc """
+  Module that handles all the math behind the collision detection algo
+  """
 
-  alias BreakoutLiveWeb.Live.Engine.HitPoint
+  @type hitpoint :: %{
+          x: number(),
+          y: number(),
+          direction: :top | :left | :bottom | :right
+        }
 
   # Build the four points used to make two segments, which will be checked to
   # compute the interception (if any) and the direction of it
-  @spec collision_point(number, number, number, number, number, map) :: HitPoint.t() | nil
+  @spec collision_point(number, number, number, number, number, map) :: hitpoint() | nil
   def collision_point(x, y, dx, dy, radius, block) do
     collision_x =
       case {dx, dy} do
@@ -33,9 +37,7 @@ defmodule BreakoutLiveWeb.Live.Engine do
           nil
       end
 
-    if not is_nil(collision_x) do
-      collision_x
-    else
+    if is_nil(collision_x) do
       case {dx, dy} do
         {_, dy} when dy < 0 ->
           compute_collision(
@@ -58,6 +60,8 @@ defmodule BreakoutLiveWeb.Live.Engine do
         _ ->
           nil
       end
+    else
+      collision_x
     end
   end
 
