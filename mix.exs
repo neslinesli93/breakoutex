@@ -47,7 +47,7 @@ defmodule BreakoutLive.Mixfile do
       {:jason, "~> 1.0"},
       {:phoenix, "~> 1.4", override: true},
       {:phoenix_ecto, "~> 4.0"},
-      {:phoenix_html, "~> 2.13", github: "phoenixframework/phoenix_html", override: true},
+      {:phoenix_html, "~> 2.13", override: true},
       {:phoenix_live_view, "~> 0.2.0"},
       {:phoenix_pubsub, "~> 1.1"},
       {:plug, "~> 1.7"},
