@@ -21,7 +21,10 @@ jobs:
           mix local.rebar --force
           mix local.hex --force
           mix deps.get
-      - name: Compile and lint everything
+      - name: Compile and lint the backend
         run: |
           mix compile --all-warnings --ignore-module-conflict --warnings-as-errors --debug-info
           mix check
+      - name: Compile the frontend
+        run: |
+          cd assets && npm i && npm run deploy
