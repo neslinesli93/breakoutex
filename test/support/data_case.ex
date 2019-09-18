@@ -16,8 +16,6 @@ defmodule BreakoutLive.DataCase do
 
   using do
     quote do
-      alias BreakoutLive.Repo
-
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
@@ -26,12 +24,6 @@ defmodule BreakoutLive.DataCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(BreakoutLive.Repo)
-
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(BreakoutLive.Repo, {:shared, self()})
-    end
-
     :ok
   end
 
