@@ -38,12 +38,12 @@ defmodule BreakoutLiveWeb.Live.Game do
     {:noreply, new_socket}
   end
 
-  def handle_event("keydown", key, socket) do
-    {:noreply, on_input(socket, key)}
+  def handle_event("keydown", %{"code" => code}, socket) do
+    {:noreply, on_input(socket, code)}
   end
 
-  def handle_event("keyup", key, socket) do
-    {:noreply, on_stop_input(socket, key)}
+  def handle_event("keyup", %{"code" => code}, socket) do
+    {:noreply, on_stop_input(socket, code)}
   end
 
   defp game_loop(%{assigns: %{game_state: :playing}} = socket) do
@@ -216,7 +216,7 @@ defmodule BreakoutLiveWeb.Live.Game do
   end
 
   # Handle keydown events
-  defp on_input(socket, " " = _spacebar), do: start_game(socket)
+  defp on_input(socket, "Space"), do: start_game(socket)
 
   defp on_input(%{assigns: %{game_state: :playing}} = socket, key)
        when key in @left_keys,

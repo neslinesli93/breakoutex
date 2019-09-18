@@ -45,18 +45,18 @@ defmodule BreakoutLive.Mixfile do
       {:elixir_uuid, "~> 1.2"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:phoenix, "~> 1.4.2"},
+      {:phoenix, "~> 1.4", override: true},
       {:phoenix_ecto, "~> 4.0"},
       {:phoenix_html, "~> 2.13", github: "phoenixframework/phoenix_html", override: true},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, github: "phoenixframework/phoenix_live_view"},
+      {:phoenix_live_view, "~> 0.2.0"},
       {:phoenix_pubsub, "~> 1.1"},
       {:plug, "~> 1.7"},
       {:plug_cowboy, "~> 2.0"},
       {:postgrex, ">= 0.0.0"},
       {:tzdata, "~> 1.0.0-rc.1", override: true},
       {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false}
+      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false},
+      {:phoenix_live_reload, "~> 1.2", only: :dev}
     ]
   end
 

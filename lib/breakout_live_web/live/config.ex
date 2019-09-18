@@ -35,8 +35,8 @@ defmodule BreakoutLiveWeb.Live.Config do
       # Misc
       @ball_speed 4
 
-      @left_keys ["ArrowLeft", "a", "A"]
-      @right_keys ["ArrowRight", "d", "D"]
+      @left_keys ["ArrowLeft", "KeyA"]
+      @right_keys ["ArrowRight", "KeyD"]
 
       @starting_angles Enum.concat([-60..-15, 15..60])
 
