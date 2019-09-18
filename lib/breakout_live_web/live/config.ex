@@ -1,4 +1,6 @@
 defmodule BreakoutLiveWeb.Live.Config do
+  # credo:disable-for-this-file Credo.Check.Refactor.LongQuoteBlocks
+
   @moduledoc """
   Module that holds all the constants and initial state of the game
   """
@@ -6,8 +8,9 @@ defmodule BreakoutLiveWeb.Live.Config do
   alias BreakoutLiveWeb.Live.Helpers
 
   defmacro __using__(_) do
-    # credo:disable-for-next-line Credo.Check.Refactor.LongQuoteBlocks
     quote do
+      # CONSTANTS
+
       # Time in ms that schedules the game loop
       @tick 16
       # Width in pixels, used as the base for every type of block: bricks, paddle, walls, etc.
@@ -135,6 +138,58 @@ defmodule BreakoutLiveWeb.Live.Config do
 
       @levels_no length(@levels)
 
+      # TYPES
+
+      @type block :: %{
+              type: :wall | :floor | :empty,
+              left: number(),
+              top: number(),
+              width: number(),
+              height: number()
+            }
+
+      @type brick :: %{
+              type: :brick,
+              color: String.t(),
+              width: number(),
+              height: number(),
+              id: String.t(),
+              visible: boolean(),
+              left: number(),
+              top: number(),
+              right: number(),
+              bottom: number()
+            }
+
+      @type paddle :: %{
+              width: number(),
+              height: number(),
+              left: number(),
+              top: number(),
+              right: number(),
+              bottom: number(),
+              id: String.t(),
+              type: :paddle,
+              visible: boolean(),
+              direction: :left | :right | :stationary,
+              speed: number(),
+              length: number()
+            }
+
+      @type ball :: %{
+              radius: number(),
+              x: number(),
+              y: number(),
+              dx: number(),
+              dy: number(),
+              left: number(),
+              top: number(),
+              width: number(),
+              height: number(),
+              speed: number()
+            }
+
+      @spec initial_state() :: map()
       defp initial_state() do
         %{
           game_state: :welcome,
@@ -150,6 +205,7 @@ defmodule BreakoutLiveWeb.Live.Config do
         }
       end
 
+      @spec initial_paddle_state() :: paddle()
       defp initial_paddle_state() do
         %{
           width: @paddle_length * @unit,
@@ -170,6 +226,7 @@ defmodule BreakoutLiveWeb.Live.Config do
         }
       end
 
+      @spec initial_ball_state() :: ball()
       defp initial_ball_state() do
         %{
           radius: @ball_radius,

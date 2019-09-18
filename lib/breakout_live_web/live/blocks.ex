@@ -8,27 +8,6 @@ defmodule BreakoutLiveWeb.Live.Blocks do
 
   alias BreakoutLiveWeb.Live.Helpers
 
-  @type block :: %{
-          type: :wall | :floor | :empty,
-          left: number(),
-          top: number(),
-          width: number(),
-          height: number()
-        }
-
-  @type brick :: %{
-          type: :brick,
-          color: String.t(),
-          width: number(),
-          height: number(),
-          id: String.t(),
-          visible: boolean(),
-          left: number(),
-          top: number(),
-          right: number(),
-          bottom: number()
-        }
-
   @spec build_board(number(), number(), number()) :: [map()]
   def build_board(level, width, height) do
     %{grid: grid, brick_length: brick_length} = Enum.at(@levels, level)
@@ -56,7 +35,7 @@ defmodule BreakoutLiveWeb.Live.Blocks do
     blocks
   end
 
-  @spec build_bricks(number(), number(), number()) :: [map()]
+  @spec build_bricks(number(), number(), number()) :: [brick()]
   def build_bricks(level, width, height) do
     level
     |> build_board(width, height)
