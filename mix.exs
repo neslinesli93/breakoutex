@@ -10,7 +10,12 @@ defmodule BreakoutLive.Mixfile do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      dialyzer: [
+        plt_add_apps: [:mix],
+        plt_add_deps: :transitive,
+        ignore_warnings: ".dialyzerignore"
+      ]
     ]
   end
 
@@ -33,23 +38,25 @@ defmodule BreakoutLive.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.4.2"},
-      {:phoenix_live_view, github: "phoenixframework/phoenix_live_view"},
-      {:plug_cowboy, "~> 2.0"},
-      {:plug, "~> 1.7"},
-      {:phoenix_pubsub, "~> 1.1"},
-      {:phoenix_ecto, "~> 4.0"},
+      {:calendar, "~> 0.17.4"},
+      {:cowboy, "~> 2.0"},
+      {:distillery, "~> 2.0"},
       {:ecto_sql, "~> 3.0"},
-      {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.13", github: "phoenixframework/phoenix_html", override: true},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:elixir_uuid, "~> 1.2"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:cowboy, "~> 2.0"},
-      {:calendar, "~> 0.17.4"},
-      {:elixir_uuid, "~> 1.2"},
-      {:distillery, "~> 2.0"},
-      {:tzdata, "~> 1.0.0-rc.1", override: true}
+      {:phoenix, "~> 1.4", override: true},
+      {:phoenix_ecto, "~> 4.0"},
+      {:phoenix_html, "~> 2.13", github: "phoenixframework/phoenix_html", override: true},
+      {:phoenix_live_view, "~> 0.2.0"},
+      {:phoenix_pubsub, "~> 1.1"},
+      {:plug, "~> 1.7"},
+      {:plug_cowboy, "~> 2.0"},
+      {:postgrex, ">= 0.0.0"},
+      {:tzdata, "~> 1.0.0-rc.1", override: true},
+      {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false},
+      {:phoenix_live_reload, "~> 1.2", only: :dev}
     ]
   end
 
@@ -61,9 +68,12 @@ defmodule BreakoutLive.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate", "test"]
+      check: [
+        "format --check-formatted mix.exs 'lib/**/*.{ex,exs}' 'test/**/*.{ex,exs}' 'config/*.{ex,exs}'",
+        "credo -a",
+        "dialyzer --halt-exit-status"
+      ],
+      "format.all": ["format mix.exs 'lib/**/*.{ex,exs}' 'test/**/*.{ex,exs}' 'config/*.{ex,exs}'"]
     ]
   end
 end

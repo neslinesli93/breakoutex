@@ -58,9 +58,7 @@ defmodule BreakoutLiveWeb.Endpoint do
         System.get_env("SECRET_KEY_BASE") ||
           raise("expected the SECRET_KEY_BASE environment variable to be set")
 
-      config =
-        config
-        |> Keyword.put(:secret_key_base, secret_key_base)
+      config = Keyword.put(config, :secret_key_base, secret_key_base)
 
       {:ok, config}
     else

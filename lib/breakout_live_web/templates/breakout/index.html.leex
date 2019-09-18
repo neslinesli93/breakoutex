@@ -27,7 +27,7 @@
 
 <%= if @game_state == :finish do %>
     <div class="victory-container">
-        <h3>Contratulations, you completed the game!</h3>
+        <h3>Congratulations, you completed the game!</h3>
 
         <%= case @lost_lives do %>
         <% 0 -> %>
@@ -58,29 +58,25 @@
         <% end %>
 
         <div class="block ball"
-            style="left: <%= @ball.x - @ball.radius %>px;
-                top: <%= @ball.y - @ball.radius %>px;
+            style="transform: translate3d(<%= @ball.x - @ball.radius %>px, <%= @ball.y - @ball.radius %>px, 0px);
                 width: <%= @ball.width %>px;
                 height: <%= @ball.height %>px; "></div>
 
         <div class="block paddle"
-            style="left: <%= @paddle.left %>px;
-            top: <%= @paddle.top %>px;
+            style="transform: translate3d(<%= @paddle.left %>px, <%= @paddle.top %>px, 0px);
             width: <%= @paddle.width %>px;
             height: <%= @paddle.height %>px; "></div>
 
         <%= for block <- @blocks, block.type in [:wall, :floor] do %>
         <div class="block <%= block.type %>"
-            style="left: <%= block.left %>px;
-                    top: <%= block.top %>px;
+            style="transform: translate3d(<%= block.left %>px, <%= block.top %>px, 0px);
                     width: <%= block.width %>px;
                     height: <%= block.height %>px; "></div>
         <% end %>
 
         <%= for brick <- @bricks, brick.visible == true do %>
         <div class="block brick"
-            style="left: <%= brick.left %>px;
-                    top: <%= brick.top %>px;
+            style="transform: translate3d(<%= brick.left %>px, <%= brick.top %>px, 0px);
                     width: <%= brick.width %>px;
                     height: <%= brick.height %>px;
                     background: <%= Map.fetch!(brick, :color) %>; "></div>

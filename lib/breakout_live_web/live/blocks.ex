@@ -1,9 +1,14 @@
 defmodule BreakoutLiveWeb.Live.Blocks do
+  @moduledoc """
+  Module that contains the definitions of all the block types:
+  bricks, paddle, etc
+  """
+
   use BreakoutLiveWeb.Live.Config
 
   alias BreakoutLiveWeb.Live.Helpers
 
-  @spec build_board(number, number, number) :: [map]
+  @spec build_board(number(), number(), number()) :: [map()]
   def build_board(level, width, height) do
     %{grid: grid, brick_length: brick_length} = Enum.at(@levels, level)
 
@@ -30,13 +35,14 @@ defmodule BreakoutLiveWeb.Live.Blocks do
     blocks
   end
 
-  @spec build_bricks(number, number, number) :: [map]
+  @spec build_bricks(number(), number(), number()) :: [brick()]
   def build_bricks(level, width, height) do
     level
     |> build_board(width, height)
     |> Enum.filter(&(&1.type == :brick))
   end
 
+  @spec wall(number(), number(), number(), number()) :: block()
   defp wall(x_idx, y_idx, width, height) do
     %{
       type: :wall,
@@ -47,6 +53,7 @@ defmodule BreakoutLiveWeb.Live.Blocks do
     }
   end
 
+  @spec floor(number(), number(), number(), number()) :: block()
   defp floor(x_idx, y_idx, width, height) do
     %{
       type: :floor,
@@ -57,6 +64,7 @@ defmodule BreakoutLiveWeb.Live.Blocks do
     }
   end
 
+  @spec empty(number(), number(), number(), number()) :: block()
   defp empty(x_idx, y_idx, width, height) do
     %{
       type: :empty,
@@ -67,6 +75,7 @@ defmodule BreakoutLiveWeb.Live.Blocks do
     }
   end
 
+  @spec brick(String.t(), number(), number(), number(), number(), number()) :: brick()
   defp brick(color, brick_length, x_idx, y_idx, width, height) do
     %{
       type: :brick,
@@ -82,6 +91,7 @@ defmodule BreakoutLiveWeb.Live.Blocks do
     }
   end
 
+  @spec get_color(String.t()) :: String.t()
   defp get_color("r"), do: "red"
   defp get_color("b"), do: "blue"
   defp get_color("g"), do: "green"
