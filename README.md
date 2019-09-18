@@ -1,23 +1,29 @@
+![Build status](https://github.com/neslinesli93/breakoutex/workflows/Build%20status/badge.svg)
+
 A Breakout clone written in pure Elixir, using Phoenix LiveView. Can be played [here](https://breakoutex.tommasopifferi.com)
 
 # Install
 
 Clone the repo
+
 ```bash
 $ git clone https://github.com/neslinesli93/breakoutex
 ```
 
 Start the container:
+
 ```bash
 $ docker-compose run --service-ports app
 ```
 
 Install npm deps:
+
 ```bash
 $ cd assets && npm i && cd ..
 ```
 
 Start server:
+
 ```bash
 $ ./run.sh # executes mix deps.get && mix phx.server
 ```
@@ -29,6 +35,7 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 Boilerplate taken from [here](https://github.com/chrismccord/phoenix_live_view_example)
 
 # TODO
+
 - [x] Lose game
 - [x] Win game
 - [ ] Function to call in order to receive a new, updated ball instance
