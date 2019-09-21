@@ -1,5 +1,5 @@
-defmodule BreakoutLiveWeb.Router do
-  use BreakoutLiveWeb, :router
+defmodule BreakoutexWeb.Router do
+  use BreakoutexWeb, :router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -13,7 +13,7 @@ defmodule BreakoutLiveWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", BreakoutLiveWeb do
+  scope "/", BreakoutexWeb do
     pipe_through :browser
 
     get "/", PageController, :game

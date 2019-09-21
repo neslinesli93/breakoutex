@@ -1,9 +1,9 @@
-defmodule BreakoutLiveWeb.Live.Engine do
+defmodule BreakoutexWeb.Live.Engine do
   @moduledoc """
   Module that handles all the math behind the collision detection algo
   """
 
-  use BreakoutLiveWeb.Live.Config
+  use BreakoutexWeb.Live.Config
 
   @type direction :: :top | :left | :bottom | :right
 

@@ -1,12 +1,12 @@
-defmodule BreakoutLiveWeb.Live.Blocks do
+defmodule BreakoutexWeb.Live.Blocks do
   @moduledoc """
   Module that contains the definitions of all the block types:
   bricks, paddle, etc
   """
 
-  use BreakoutLiveWeb.Live.Config
+  use BreakoutexWeb.Live.Config
 
-  alias BreakoutLiveWeb.Live.Helpers
+  alias BreakoutexWeb.Live.Helpers
 
   @spec build_board(number(), number(), number()) :: [map()]
   def build_board(level, width, height) do

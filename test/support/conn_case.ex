@@ -1,4 +1,4 @@
-defmodule BreakoutLiveWeb.ConnCase do
+defmodule BreakoutexWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -19,10 +19,10 @@ defmodule BreakoutLiveWeb.ConnCase do
     quote do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
-      alias BreakoutLiveWeb.Router.Helpers, as: Routes
+      alias BreakoutexWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
-      @endpoint BreakoutLiveWeb.Endpoint
+      @endpoint BreakoutexWeb.Endpoint
     end
   end
 

@@ -1,11 +1,11 @@
-defmodule BreakoutLiveWeb.Live.Config do
+defmodule BreakoutexWeb.Live.Config do
   # credo:disable-for-this-file Credo.Check.Refactor.LongQuoteBlocks
 
   @moduledoc """
   Module that holds all the constants and initial state of the game
   """
 
-  alias BreakoutLiveWeb.Live.Helpers
+  alias BreakoutexWeb.Live.Helpers
 
   defmacro __using__(_) do
     quote do

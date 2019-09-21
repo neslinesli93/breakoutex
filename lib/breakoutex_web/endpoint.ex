@@ -1,7 +1,7 @@
-defmodule BreakoutLiveWeb.Endpoint do
+defmodule BreakoutexWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :breakout_live
 
-  socket "/socket", BreakoutLiveWeb.UserSocket,
+  socket "/socket", BreakoutexWeb.UserSocket,
     websocket: [timeout: 45_000],
     longpoll: false
 
@@ -44,7 +44,7 @@ defmodule BreakoutLiveWeb.Endpoint do
     key: "_breakoutex_key",
     signing_salt: System.get_env("SIGNING_SALT") || "8fgr2/nl"
 
-  plug BreakoutLiveWeb.Router
+  plug BreakoutexWeb.Router
 
   @doc """
   Callback invoked for dynamically configuring the endpoint.

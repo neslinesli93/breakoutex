@@ -1,6 +1,6 @@
 ![Build status](https://github.com/neslinesli93/breakoutex/workflows/Build%20status/badge.svg)
 
-A Breakout clone written in pure Elixir, using Phoenix LiveView. Can be played [here](https://breakoutex.tommasopifferi.com)
+A Breakoutex clone written in pure Elixir, using Phoenix LiveView. Can be played [here](https://breakoutex.tommasopifferi.com)
 
 # Install
 

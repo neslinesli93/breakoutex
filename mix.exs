@@ -1,4 +1,4 @@
-defmodule BreakoutLive.Mixfile do
+defmodule Breakoutex.Mixfile do
   use Mix.Project
 
   def project do
@@ -24,7 +24,7 @@ defmodule BreakoutLive.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {BreakoutLive.Application, []},
+      mod: {Breakoutex.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
