@@ -14,16 +14,19 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: elixir:1.8.1-slim
+      image: bitwalker/alpine-elixir-phoenix:1.8.1
 
     steps:
       - uses: actions/checkout@v1
-      - name: Install Dependencies
+      - name: Install Elixir deps
         run: |
           mix local.rebar --force
           mix local.hex --force
           mix deps.get
-      - name: Compile and lint everything
+      - name: Compile and lint the backend
         run: |
           mix compile --all-warnings --ignore-module-conflict --warnings-as-errors --debug-info
           mix check
+      - name: Compile the frontend
+        run: |
+          cd assets && npm i && npm run deploy
