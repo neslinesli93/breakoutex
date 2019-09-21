@@ -20,5 +20,5 @@ defmodule BreakoutexWeb.Gettext do
 
   See the [Gettext Docs](https://hexdocs.pm/gettext) for detailed usage.
   """
-  use Gettext, otp_app: :breakout_live
+  use Gettext, otp_app: :breakoutex
 end

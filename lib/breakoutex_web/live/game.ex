@@ -17,7 +17,7 @@ defmodule BreakoutexWeb.Live.Game do
         }
 
   def render(assigns) do
-    BreakoutexWeb.BreakoutexView.render("index.html", assigns)
+    BreakoutexWeb.Breakoutex.render("index.html", assigns)
   end
 
   @spec mount(map(), Socket.t()) :: {:ok, Socket.t()}

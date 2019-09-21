@@ -3,7 +3,7 @@ defmodule Breakoutex.Mixfile do
 
   def project do
     [
-      app: :breakout_live,
+      app: :breakoutex,
       version: "0.1.0",
       elixir: "~> 1.8",
       elixirc_paths: elixirc_paths(Mix.env()),

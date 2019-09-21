@@ -6,7 +6,7 @@ use Mix.Config
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
-config :breakout_live, BreakoutexWeb.Endpoint,
+config :breakoutex, BreakoutexWeb.Endpoint,
   # https: [port: 4001, certfile: "priv/cert/selfsigned.pem", keyfile: "priv/cert/selfsigned_key.pem"],
   debug_errors: true,
   code_reloader: true,
@@ -45,14 +45,14 @@ config :breakout_live, BreakoutexWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :breakout_live, BreakoutexWeb.Endpoint,
+config :breakoutex, BreakoutexWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
-      ~r{lib/breakout_live_web/views/.*(ex)$},
-      ~r{lib/breakout_live_web/templates/.*(eex)$},
-      ~r{lib/breakout_live_web/live/.*(ex)$}
+      ~r{lib/breakoutex_web/views/.*(ex)$},
+      ~r{lib/breakoutex_web/templates/.*(eex)$},
+      ~r{lib/breakoutex_web/live/.*(ex)$}
     ]
   ]
 

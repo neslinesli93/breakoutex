@@ -6,7 +6,7 @@
 use Mix.Config
 
 # Configures the endpoint
-config :breakout_live, BreakoutexWeb.Endpoint,
+config :breakoutex, BreakoutexWeb.Endpoint,
   url: [host: "localhost"],
   http: [port: 4000],
   secret_key_base: "zlMbr9KIbSMRg9BXFBpsWgVUqeDm09NBI9124BQ8u+2R6ZRk9hcPe9iC4ciM5rZ4",

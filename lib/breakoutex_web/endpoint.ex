@@ -1,5 +1,5 @@
 defmodule BreakoutexWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :breakout_live
+  use Phoenix.Endpoint, otp_app: :breakoutex
 
   socket "/socket", BreakoutexWeb.UserSocket,
     websocket: [timeout: 45_000],
@@ -13,7 +13,7 @@ defmodule BreakoutexWeb.Endpoint do
   # when deploying your static files in production.
   plug Plug.Static,
     at: "/",
-    from: :breakout_live,
+    from: :breakoutex,
     gzip: false,
     only: ~w(css fonts images js favicon.ico robots.txt)
 

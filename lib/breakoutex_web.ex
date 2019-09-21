@@ -30,7 +30,7 @@ defmodule BreakoutexWeb do
   def view do
     quote do
       use Phoenix.View,
-        root: "lib/breakout_live_web/templates",
+        root: "lib/breakoutex_web/templates",
         namespace: BreakoutexWeb
 
       # Import convenience functions from controllers
