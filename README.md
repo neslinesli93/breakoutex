@@ -30,6 +30,22 @@ $ ./run.sh # executes mix deps.get && mix phx.server
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
+# Deploy
+
+To build an image ready for production, run:
+
+```bash
+$ make build
+```
+
+This will build a new docker image, which can be pushed to some registry. If you want to test the production image locally, just run:
+
+```bash
+$ make run
+```
+
+And open `http://localhost:4000`. See `Makefile` for more info on the two command.
+
 # Notes
 
 Boilerplate taken from [here](https://github.com/chrismccord/phoenix_live_view_example)
