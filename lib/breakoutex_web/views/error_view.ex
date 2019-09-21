@@ -1,5 +1,5 @@
-defmodule BreakoutLiveWeb.ErrorView do
-  use BreakoutLiveWeb, :view
+defmodule BreakoutexWeb.ErrorView do
+  use BreakoutexWeb, :view
 
   # If you want to customize a particular status code
   # for a certain format, you may uncomment below.

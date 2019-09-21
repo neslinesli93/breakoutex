@@ -1,4 +1,4 @@
-defmodule BreakoutLiveWeb.ChannelCase do
+defmodule BreakoutexWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -21,7 +21,7 @@ defmodule BreakoutLiveWeb.ChannelCase do
       use Phoenix.ChannelTest
 
       # The default endpoint for testing
-      @endpoint BreakoutLiveWeb.Endpoint
+      @endpoint BreakoutexWeb.Endpoint
     end
   end
 

@@ -1,7 +1,7 @@
-defmodule BreakoutLiveWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :breakout_live
+defmodule BreakoutexWeb.Endpoint do
+  use Phoenix.Endpoint, otp_app: :breakoutex
 
-  socket "/socket", BreakoutLiveWeb.UserSocket,
+  socket "/socket", BreakoutexWeb.UserSocket,
     websocket: [timeout: 45_000],
     longpoll: false
 
@@ -13,7 +13,7 @@ defmodule BreakoutLiveWeb.Endpoint do
   # when deploying your static files in production.
   plug Plug.Static,
     at: "/",
-    from: :breakout_live,
+    from: :breakoutex,
     gzip: false,
     only: ~w(css fonts images js favicon.ico robots.txt)
 
@@ -44,7 +44,7 @@ defmodule BreakoutLiveWeb.Endpoint do
     key: "_breakoutex_key",
     signing_salt: System.get_env("SIGNING_SALT") || "8fgr2/nl"
 
-  plug BreakoutLiveWeb.Router
+  plug BreakoutexWeb.Router
 
   @doc """
   Callback invoked for dynamically configuring the endpoint.

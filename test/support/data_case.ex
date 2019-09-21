@@ -1,4 +1,4 @@
-defmodule BreakoutLive.DataCase do
+defmodule Breakoutex.DataCase do
   @moduledoc """
   This module defines the setup for tests requiring
   access to the application's data layer.
@@ -19,7 +19,7 @@ defmodule BreakoutLive.DataCase do
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import BreakoutLive.DataCase
+      import Breakoutex.DataCase
     end
   end
 

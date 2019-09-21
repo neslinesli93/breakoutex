@@ -1,12 +1,12 @@
-defmodule BreakoutLiveWeb do
+defmodule BreakoutexWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, views, channels and so on.
 
   This can be used in your application as:
 
-      use BreakoutLiveWeb, :controller
-      use BreakoutLiveWeb, :view
+      use BreakoutexWeb, :controller
+      use BreakoutexWeb, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -19,19 +19,19 @@ defmodule BreakoutLiveWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: BreakoutLiveWeb
+      use Phoenix.Controller, namespace: BreakoutexWeb
 
       import Plug.Conn
-      import BreakoutLiveWeb.Gettext
-      alias BreakoutLiveWeb.Router.Helpers, as: Routes
+      import BreakoutexWeb.Gettext
+      alias BreakoutexWeb.Router.Helpers, as: Routes
     end
   end
 
   def view do
     quote do
       use Phoenix.View,
-        root: "lib/breakout_live_web/templates",
-        namespace: BreakoutLiveWeb
+        root: "lib/breakoutex_web/templates",
+        namespace: BreakoutexWeb
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 1, get_flash: 2, view_module: 1]
@@ -39,9 +39,9 @@ defmodule BreakoutLiveWeb do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import BreakoutLiveWeb.ErrorHelpers
-      import BreakoutLiveWeb.Gettext
-      alias BreakoutLiveWeb.Router.Helpers, as: Routes
+      import BreakoutexWeb.ErrorHelpers
+      import BreakoutexWeb.Gettext
+      alias BreakoutexWeb.Router.Helpers, as: Routes
 
       import Phoenix.LiveView, only: [live_render: 2, live_render: 3]
     end
@@ -58,7 +58,7 @@ defmodule BreakoutLiveWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import BreakoutLiveWeb.Gettext
+      import BreakoutexWeb.Gettext
     end
   end
 

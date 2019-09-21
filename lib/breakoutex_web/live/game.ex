@@ -1,14 +1,14 @@
-defmodule BreakoutLiveWeb.Live.Game do
+defmodule BreakoutexWeb.Live.Game do
   @moduledoc """
   Main module, contains the entry point for the live view socket and
   all the game logic
   """
 
   use Phoenix.LiveView
-  use BreakoutLiveWeb.Live.Config
+  use BreakoutexWeb.Live.Config
 
   alias Phoenix.LiveView.Socket
-  alias BreakoutLiveWeb.Live.{Blocks, Engine}
+  alias BreakoutexWeb.Live.{Blocks, Engine}
 
   @type intersection_point :: %{
           block: paddle() | brick(),
@@ -17,7 +17,7 @@ defmodule BreakoutLiveWeb.Live.Game do
         }
 
   def render(assigns) do
-    BreakoutLiveWeb.BreakoutView.render("index.html", assigns)
+    BreakoutexWeb.Breakoutex.render("index.html", assigns)
   end
 
   @spec mount(map(), Socket.t()) :: {:ok, Socket.t()}
@@ -212,7 +212,7 @@ defmodule BreakoutLiveWeb.Live.Game do
   defp collision_direction_y(dy, direction) when direction in [:top, :bottom], do: -dy
   defp collision_direction_y(dy, _), do: dy
 
-  # Make the ball bounce off using the Breakout style
+  # Make the ball bounce off using the Breakoutex style
   @spec ball_dx_after_paddle(number(), number(), number()) :: number()
   defp ball_dx_after_paddle(point_x, paddle_x, unit) do
     @ball_speed * (point_x - (paddle_x + @paddle_length * unit / 2)) / (@paddle_length * unit / 2)

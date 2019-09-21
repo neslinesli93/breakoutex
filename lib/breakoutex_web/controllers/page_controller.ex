@@ -1,5 +1,5 @@
-defmodule BreakoutLiveWeb.PageController do
-  use BreakoutLiveWeb, :controller
+defmodule BreakoutexWeb.PageController do
+  use BreakoutexWeb, :controller
 
   alias Phoenix.LiveView
 
@@ -10,7 +10,7 @@ defmodule BreakoutLiveWeb.PageController do
   def game(conn, _) do
     LiveView.Controller.live_render(
       conn,
-      BreakoutLiveWeb.Live.Game,
+      BreakoutexWeb.Live.Game,
       session: %{cookies: conn.cookies}
     )
   end

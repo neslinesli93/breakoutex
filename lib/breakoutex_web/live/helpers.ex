@@ -1,9 +1,9 @@
-defmodule BreakoutLiveWeb.Live.Helpers do
+defmodule BreakoutexWeb.Live.Helpers do
   @moduledoc """
   Various helper functions
   """
 
-  use BreakoutLiveWeb.Live.Config
+  use BreakoutexWeb.Live.Config
 
   # Multiply an integer coordinate for a length, giving
   # the actual coordinate on a continuous plane

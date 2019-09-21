@@ -1,4 +1,4 @@
-defmodule BreakoutLiveWeb.ErrorHelpers do
+defmodule BreakoutexWeb.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -39,9 +39,9 @@ defmodule BreakoutLiveWeb.ErrorHelpers do
     # should be written to the errors.po file. The :count option is
     # set by Ecto and indicates we should also apply plural rules.
     if count = opts[:count] do
-      Gettext.dngettext(BreakoutLiveWeb.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(BreakoutexWeb.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(BreakoutLiveWeb.Gettext, "errors", msg, opts)
+      Gettext.dgettext(BreakoutexWeb.Gettext, "errors", msg, opts)
     end
   end
 end
