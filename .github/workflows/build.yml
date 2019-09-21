@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: elixir:1.8.1-slim
+      image: bitwalker/alpine-elixir-phoenix:1.8.1
 
     steps:
       - uses: actions/checkout@v1
-      - name: Install Dependencies
+      - name: Install Elixir deps
         run: |
           mix local.rebar --force
           mix local.hex --force
