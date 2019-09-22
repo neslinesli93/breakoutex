@@ -1,12 +1,12 @@
 /* This file is for your main application css. */
-@import url(https://fonts.googleapis.com/css?family=Press+Start+2P);
+@import url(https://fonts.googleapis.com/css?family=Press+Start+2p);
 
 @import "./phoenix.css";
 @import "./live_view.css";
 @import "./breakout.css";
 
 html {
-  overflow-x:hidden;
+  overflow-x: hidden;
   background: #292a2d;
   color: #a9a9b3;
 }

@@ -23,7 +23,7 @@
 
 @media screen and (min-width: 700px) {
   .welcome-container .no-mobile {
-    display: none
+    display: none;
   }
 }
 
@@ -55,24 +55,24 @@
   max-width: 440px;
 }
 
-.game-container .block{
+.game-container .block {
   display: block;
   position: absolute;
 }
 
 .game-container .block.wall,
 .game-container .block.floor {
-  background: #717D7E;
+  background: #717d7e;
 }
 
 .game-container .block.paddle {
-  background: #717D7E;
+  background: #717d7e;
   will-change: left, top;
   border-radius: 20px;
 }
 
 .game-container .block.ball {
-  background: #CA6F1E;
+  background: #ca6f1e;
   border-radius: 50%;
   will-change: left, top;
 }
