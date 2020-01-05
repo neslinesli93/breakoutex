@@ -8,7 +8,7 @@ defmodule BreakoutexWeb.Live.Blocks do
 
   alias BreakoutexWeb.Live.Helpers
 
-  @spec build_board(number(), number(), number()) :: [map()]
+  @spec build_board(number(), number(), number()) :: [block() | brick()]
   def build_board(level, width, height) do
     %{grid: grid, brick_length: brick_length} = Enum.at(@levels, level)
 

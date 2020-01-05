@@ -1,8 +1,8 @@
 /* This file is for your main application css. */
 @import url(https://fonts.googleapis.com/css?family=Press+Start+2p);
 
+@import "../../deps/phoenix_live_view/assets/css/live_view.css";
 @import "./phoenix.css";
-@import "./live_view.css";
 @import "./breakout.css";
 
 html {

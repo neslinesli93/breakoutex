@@ -182,8 +182,6 @@ defmodule BreakoutexWeb.Live.Config do
               y: number(),
               dx: number(),
               dy: number(),
-              left: number(),
-              top: number(),
               width: number(),
               height: number(),
               speed: number()
@@ -236,13 +234,9 @@ defmodule BreakoutexWeb.Live.Config do
           # Movement of the ball in the two axis
           dx: 0,
           dy: 0,
-          # Box surrounding the ball. We don't need all the coordinates, since we just use
-          # the top-left vertex for drawing
-          left: Helpers.coordinate(@ball_x, @unit) - @ball_radius,
-          top: Helpers.coordinate(@ball_y, @unit) - @ball_radius,
+          # Misc
           width: 2 * @ball_radius,
           height: 2 * @ball_radius,
-          # Misc
           speed: @ball_speed
         }
       end

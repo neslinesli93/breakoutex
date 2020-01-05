@@ -6,10 +6,6 @@
   pointer-events: none;
 }
 
-/* .phx-error {
-  background: #ffe6f0!important;
-} */
-
 .phx-loader {
   position: relative;
   zoom: 2; /* Increase this for a bigger symbole*/
