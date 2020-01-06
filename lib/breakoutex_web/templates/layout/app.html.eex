@@ -22,11 +22,8 @@
         g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
       })();
     </script>
+    <noscript><p><img src="//matomo.tommasopifferi.com/matomo.php?idsite=3&amp;rec=1" style="border:0;" alt="" /></p></noscript>
     <!-- End Matomo Code -->
-
-    <!-- Matomo Image Tracker-->
-    <img src="https://matomo.tommasopifferi.com/matomo.php?idsite=3&amp;rec=1" style="border:0" alt="" />
-    <!-- End Matomo -->
   </head>
   <body>
     <header class="header">
