@@ -67,7 +67,6 @@
 
 .game-container .block.paddle {
   background: #717d7e;
-  will-change: left, top;
   border-radius: 20px;
 }
 

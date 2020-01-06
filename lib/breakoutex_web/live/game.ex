@@ -17,7 +17,7 @@ defmodule BreakoutexWeb.Live.Game do
         }
 
   def render(assigns) do
-    BreakoutexWeb.Breakoutex.render("index.html", assigns)
+    BreakoutexWeb.GameView.render("index.html", assigns)
   end
 
   @spec mount(map(), Socket.t()) :: {:ok, Socket.t()}
@@ -107,9 +107,7 @@ defmodule BreakoutexWeb.Live.Game do
       :ball,
       %{ball | dx: new_dx, dy: new_dy}
       |> update_in([:x], &(&1 + new_dx))
-      |> update_in([:left], &(&1 + new_dx))
       |> update_in([:y], &(&1 + new_dy))
-      |> update_in([:top], &(&1 + new_dy))
     )
   end
 
@@ -154,9 +152,7 @@ defmodule BreakoutexWeb.Live.Game do
             | x: point.x,
               y: point.y,
               dx: ball_dx_after_paddle(point.x, paddle.left, unit),
-              dy: -ball.dy,
-              left: point.x - ball.radius,
-              top: point.y - ball.radius
+              dy: -ball.dy
           }
         )
 
@@ -171,15 +167,19 @@ defmodule BreakoutexWeb.Live.Game do
             | x: point.x,
               y: point.y,
               dx: collision_direction_x(ball.dx, point.direction),
-              dy: collision_direction_y(ball.dy, point.direction),
-              left: point.x - ball.radius,
-              top: point.y - ball.radius
+              dy: collision_direction_y(ball.dy, point.direction)
           }
         )
     end
   end
 
-  @spec maybe_build_closest(paddle() | brick(), intersection_point(), Engine.hitpoint(), ball(), number()) ::
+  @spec maybe_build_closest(
+          paddle() | brick(),
+          intersection_point(),
+          Engine.hitpoint(),
+          ball(),
+          number()
+        ) ::
           intersection_point()
   defp maybe_build_closest(new_block, curr_intersection, p, ball, curr_distance) do
     new_distance = Engine.compute_distance({p.x, p.y}, {ball.x, ball.y})
@@ -307,7 +307,7 @@ defmodule BreakoutexWeb.Live.Game do
 
   defp start_game(socket), do: socket
 
-  @spec move_paddle(Socket.t(), Engine.direction()) :: Socket.t()
+  @spec move_paddle(Socket.t(), :left | :right) :: Socket.t()
   defp move_paddle(%{assigns: %{paddle: paddle}} = socket, direction) do
     if paddle.direction == direction do
       socket
@@ -316,7 +316,7 @@ defmodule BreakoutexWeb.Live.Game do
     end
   end
 
-  @spec stop_paddle(Socket.t(), Engine.direction()) :: Socket.t()
+  @spec stop_paddle(Socket.t(), :left | :right) :: Socket.t()
   defp stop_paddle(%{assigns: %{paddle: paddle}} = socket, direction) do
     if paddle.direction == direction do
       assign(socket, :paddle, %{paddle | direction: :stationary})
@@ -326,5 +326,6 @@ defmodule BreakoutexWeb.Live.Game do
   end
 
   @spec starting_dx() :: number()
-  defp starting_dx(), do: @starting_angles |> Enum.random() |> :math.cos() |> Kernel.*(@ball_speed)
+  defp starting_dx(),
+    do: @starting_angles |> Enum.random() |> :math.cos() |> Kernel.*(@ball_speed)
 end
