@@ -4,7 +4,7 @@ defmodule Breakoutex.Mixfile do
   def project do
     [
       app: :breakoutex,
-      version: "0.3.2",
+      version: "0.3.3",
       elixir: "~> 1.8",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -73,7 +73,9 @@ defmodule Breakoutex.Mixfile do
         "credo -a",
         "dialyzer --halt-exit-status"
       ],
-      "format.all": ["format mix.exs 'lib/**/*.{ex,exs}' 'test/**/*.{ex,exs}' 'config/*.{ex,exs}'"]
+      "format.all": [
+        "format mix.exs 'lib/**/*.{ex,exs}' 'test/**/*.{ex,exs}' 'config/*.{ex,exs}'"
+      ]
     ]
   end
 end
