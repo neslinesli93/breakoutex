@@ -189,7 +189,7 @@ defmodule BreakoutexWeb.Live.Config do
             }
 
       @spec initial_state() :: map()
-      defp initial_state() do
+      defp initial_state do
         %{
           game_state: :welcome,
           tick: @tick,
@@ -205,7 +205,7 @@ defmodule BreakoutexWeb.Live.Config do
       end
 
       @spec initial_paddle_state() :: paddle()
-      defp initial_paddle_state() do
+      defp initial_paddle_state do
         %{
           width: @paddle_length * @unit,
           height: @paddle_height * @unit,
@@ -226,7 +226,7 @@ defmodule BreakoutexWeb.Live.Config do
       end
 
       @spec initial_ball_state() :: ball()
-      defp initial_ball_state() do
+      defp initial_ball_state do
         %{
           radius: @ball_radius,
           # Coordinates of the center

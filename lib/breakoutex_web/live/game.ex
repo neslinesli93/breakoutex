@@ -37,7 +37,7 @@ defmodule BreakoutexWeb.Live.Game do
     end
   end
 
-  @spec handle_info(atom(), Socket.t()) :: {:noreply, Socket.t()} | {:stop, Socket.t()}
+  @spec handle_info(atom(), Socket.t()) :: {:noreply, Socket.t()}
   def handle_info(:tick, socket) do
     new_socket =
       socket
@@ -47,7 +47,7 @@ defmodule BreakoutexWeb.Live.Game do
     {:noreply, new_socket}
   end
 
-  @spec handle_event(String.t(), map(), Socket.t()) :: {:noreply, Socket.t()} | {:stop, Socket.t()}
+  @spec handle_event(String.t(), map(), Socket.t()) :: {:noreply, Socket.t()}
   def handle_event("keydown", %{"key" => key}, socket) do
     {:noreply, on_input(socket, key)}
   end
@@ -326,6 +326,6 @@ defmodule BreakoutexWeb.Live.Game do
   end
 
   @spec starting_dx() :: number()
-  defp starting_dx(),
+  defp starting_dx,
     do: @starting_angles |> Enum.random() |> :math.cos() |> Kernel.*(@ball_speed)
 end
