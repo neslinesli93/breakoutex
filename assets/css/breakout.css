@@ -47,11 +47,15 @@
   margin: 0 0.5rem;
 }
 
+.info-container .score {
+  font-size: 14px;
+}
+
 .help-container {
   position: absolute;
   left: 56px;
-  top: 320px;
-  font-size: 14px;
+  top: 300px;
+  font-size: 13px;
   max-width: 440px;
 }
 
@@ -85,4 +89,19 @@
 .victory-container {
   text-align: center;
   margin: 12rem;
+}
+
+.blink {
+  animation: blink-animation 1s steps(5, start) infinite;
+  -webkit-animation: blink-animation 1s steps(5, start) infinite;
+}
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
 }

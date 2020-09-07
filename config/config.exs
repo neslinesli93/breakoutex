@@ -11,8 +11,8 @@ config :breakoutex, BreakoutexWeb.Endpoint,
   http: [port: 4000],
   secret_key_base: "zlMbr9KIbSMRg9BXFBpsWgVUqeDm09NBI9124BQ8u+2R6ZRk9hcPe9iC4ciM5rZ4",
   render_errors: [view: BreakoutexWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Breakoutex.PubSub, adapter: Phoenix.PubSub.PG2],
-  live_view: [signing_salt: System.get_env("LIVE_VIEW_SALT") || "vxfMQUk2"]
+  live_view: [signing_salt: System.get_env("LIVE_VIEW_SALT") || "vxfMQUk2"],
+  pubsub_server: Breakoutex.PubSub
 
 # Configures Elixir's Logger
 config :logger, :console,

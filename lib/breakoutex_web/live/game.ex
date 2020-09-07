@@ -20,8 +20,8 @@ defmodule BreakoutexWeb.Live.Game do
     BreakoutexWeb.GameView.render("index.html", assigns)
   end
 
-  @spec mount(map(), Socket.t()) :: {:ok, Socket.t()}
-  def mount(_session, socket) do
+  @spec mount(map() | :not_mounted_at_router, map(), Socket.t()) :: {:ok, Socket.t()}
+  def mount(_params, _session, socket) do
     state = initial_state()
 
     socket =
@@ -48,12 +48,12 @@ defmodule BreakoutexWeb.Live.Game do
   end
 
   @spec handle_event(String.t(), map(), Socket.t()) :: {:noreply, Socket.t()} | {:stop, Socket.t()}
-  def handle_event("keydown", %{"code" => code}, socket) do
-    {:noreply, on_input(socket, code)}
+  def handle_event("keydown", %{"key" => key}, socket) do
+    {:noreply, on_input(socket, key)}
   end
 
-  def handle_event("keyup", %{"code" => code}, socket) do
-    {:noreply, on_stop_input(socket, code)}
+  def handle_event("keyup", %{"key" => key}, socket) do
+    {:noreply, on_stop_input(socket, key)}
   end
 
   @spec game_loop(Socket.t()) :: Socket.t()
@@ -266,7 +266,7 @@ defmodule BreakoutexWeb.Live.Game do
 
   # Handle keydown events
   @spec on_input(Socket.t(), String.t()) :: Socket.t()
-  defp on_input(socket, "Space"), do: start_game(socket)
+  defp on_input(socket, @space_key), do: start_game(socket)
 
   defp on_input(%{assigns: %{game_state: :playing}} = socket, key)
        when key in @left_keys,
