@@ -1,14 +1,10 @@
 defmodule BreakoutexWeb.GameController do
   use BreakoutexWeb, :controller
 
-  alias Phoenix.LiveView
   alias BreakoutexWeb.Live.Game
+  alias Phoenix.LiveView
 
   def index(conn, _) do
-    opts = [
-      session: %{cookies: conn.cookies}
-    ]
-
-    LiveView.Controller.live_render(conn, Game, opts)
+    LiveView.Controller.live_render(conn, Game)
   end
 end

@@ -5,7 +5,8 @@ defmodule Breakoutex.Application do
 
   def start(_type, _args) do
     children = [
-      BreakoutexWeb.Endpoint
+      BreakoutexWeb.Endpoint,
+      {Phoenix.PubSub, [name: Breakoutex.PubSub, adapter: Phoenix.PubSub.PG2]}
     ]
 
     opts = [strategy: :one_for_one, name: Breakoutex.Supervisor]

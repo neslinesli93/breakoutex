@@ -38,8 +38,9 @@ defmodule BreakoutexWeb.Live.Config do
       # Misc
       @ball_speed 4
 
-      @left_keys ["ArrowLeft", "KeyA"]
-      @right_keys ["ArrowRight", "KeyD"]
+      @space_key " "
+      @left_keys ["ArrowLeft", "a"]
+      @right_keys ["ArrowRight", "d"]
 
       @starting_angles Enum.concat([-60..-15, 15..60])
 
@@ -188,7 +189,7 @@ defmodule BreakoutexWeb.Live.Config do
             }
 
       @spec initial_state() :: map()
-      defp initial_state() do
+      defp initial_state do
         %{
           game_state: :welcome,
           tick: @tick,
@@ -204,7 +205,7 @@ defmodule BreakoutexWeb.Live.Config do
       end
 
       @spec initial_paddle_state() :: paddle()
-      defp initial_paddle_state() do
+      defp initial_paddle_state do
         %{
           width: @paddle_length * @unit,
           height: @paddle_height * @unit,
@@ -225,7 +226,7 @@ defmodule BreakoutexWeb.Live.Config do
       end
 
       @spec initial_ball_state() :: ball()
-      defp initial_ball_state() do
+      defp initial_ball_state do
         %{
           radius: @ball_radius,
           # Coordinates of the center
