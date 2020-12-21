@@ -50,6 +50,9 @@
     </div>
 
     <div class="game-container">
+        <div class="secret-container">
+            <%= @secret_message %>
+        </div>
         <%= if @game_state == :wait do %>
         <div class="help-container">
             Press <span class="controls">spacebar</span> to start playing.

@@ -53,9 +53,10 @@ defmodule BreakoutexWeb.Live.Config do
       # - r, b, g, o, p, y, t, w are the colors of the different blocks
       #
       # Brick length is expressed in basic units
-      @levels [
+      @levels System.get_env("LEVELS") || [
         %{
           brick_length: 3,
+          message: "year in review message 1",
           grid: [
             ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
             ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
@@ -83,6 +84,7 @@ defmodule BreakoutexWeb.Live.Config do
         },
         %{
           brick_length: 3,
+          message: "year in review message 2",
           grid: [
             ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
             ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
@@ -110,6 +112,7 @@ defmodule BreakoutexWeb.Live.Config do
         },
         %{
           brick_length: 2,
+          message: "year in review message 3",
           grid: [
             ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
             ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
@@ -195,6 +198,7 @@ defmodule BreakoutexWeb.Live.Config do
           tick: @tick,
           level: 0,
           lost_lives: 0,
+          secret_message: Enum.at(@levels, 0) |> Map.get(:message),
           # Basic unit for measuring blocks size
           unit: @unit,
           board_rows: @board_rows,

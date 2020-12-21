@@ -240,8 +240,8 @@ defmodule BreakoutexWeb.Live.Game do
       0 ->
         socket
         |> assign(:level, level + 1)
+        |> assign(:secret_message, Enum.at(@levels, level + 1) |> Map.get(:message))
         |> next_level()
-
       _ ->
         socket
     end

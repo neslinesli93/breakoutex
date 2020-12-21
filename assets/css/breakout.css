@@ -59,6 +59,17 @@
   max-width: 440px;
 }
 
+.secret-container {
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  top: 70px;
+  font-size: 13px;
+  max-width: 440px;
+  padding-left: 75px;
+  color: white;
+}
+
 .game-container .block {
   display: block;
   position: absolute;
