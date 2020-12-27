@@ -7,20 +7,28 @@
             </a>
         </p>
         <p>
-            The game state is kept entirely on the server, and updates are pushed through
-            a Phoenix websocket.
+            Get points for breaking bricks. Breaking multiple bricks without the ball touching the paddle
+            earns more points. Losing lives costs points.
         </p>
         <p>
-            The actual render is done under the hood by
-            <a href="https://github.com/patrick-steele-idem/morphdom" target="_blank">morphdom</a>,
-            a powerful DOM diffing library.
+            Try to get to the top of the leaderboard!
         </p>
         <p class="start-play blink">
             Press <span class="controls">spacebar</span> to start
         </p>
         <p class="no-mobile">
             Unfortunately, mobile devices are not supported at the moment. Please switch to a desktop
-            in order to be able to play the game.</p>
+            in order to be able to play the game.
+        </p>
+    </div>
+    <% end %>
+    <%= if @game_state == :name do %>
+    <div class="name-container">
+        <p>
+            Input name: <%= @player_name %><span class="blink">_</span>
+        </p>
+        <p>
+            Press < enter > to continue
         </p>
     </div>
     <% end %>
@@ -89,6 +97,13 @@
                     background: <%= Map.fetch!(brick, :color) %>; ">
         </div>
         <% end %>
+    </div>
+    <div class="score-container">
+        <div class="score">
+            <span class="multiplier">Multiplier: <%= @multiplier %></span>
+            <span class="separator"> | </span>
+            <span class="points">Score: <%= @score %></span>
+        </div>
     </div>
     <% end %>
 </div>

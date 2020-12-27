@@ -41,11 +41,16 @@ defmodule BreakoutexWeb.Live.Config do
       @space_key " "
       @left_keys ["ArrowLeft", "a"]
       @right_keys ["ArrowRight", "d"]
-
+      @backspace ["Backspace"]
+      @return ["Enter"]
       @starting_angles Enum.concat([-60..-15, 15..60])
 
       @board_rows 21
       @board_cols 26
+
+      @points_subtracted_on_lost_life 250
+      @starting_multiplier 1
+      @points_for_brick 20
 
       # Game board is represented as an ASCII matrix. Block types:
       # - X are the walls
@@ -53,92 +58,93 @@ defmodule BreakoutexWeb.Live.Config do
       # - r, b, g, o, p, y, t, w are the colors of the different blocks
       #
       # Brick length is expressed in basic units
-      @levels System.get_env("LEVELS") || [
-        %{
-          brick_length: 3,
-          message: "year in review message 1",
-          grid: [
-            ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 X),
-            ~w(X b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 X),
-            ~w(X g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 X),
-            ~w(X o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 X),
-            ~w(X p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 X),
-            ~w(X y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
-          ]
-        },
-        %{
-          brick_length: 3,
-          message: "year in review message 2",
-          grid: [
-            ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X r 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X b 0 0 b 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X g 0 0 g 0 0 g 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X o 0 0 o 0 0 o 0 0 o 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 0 0 0 0 0 0 X),
-            ~w(X t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 0 0 0 X),
-            ~w(X w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
-          ]
-        },
-        %{
-          brick_length: 2,
-          message: "year in review message 3",
-          grid: [
-            ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 p 0 p 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 p 0 b 0 b 0 p 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 p 0 b 0 b 0 b 0 b 0 p 0 0 0 0 0 X),
-            ~w(X p 0 0 0 0 0 p 0 b 0 b 0 t 0 t 0 b 0 b 0 p 0 0 0 X),
-            ~w(X b 0 p 0 p 0 b 0 b 0 t 0 w 0 w 0 t 0 b 0 b 0 p 0 X),
-            ~w(X b 0 b 0 b 0 b 0 t 0 w 0 0 0 0 0 w 0 t 0 b 0 b 0 X),
-            ~w(X t 0 b 0 b 0 t 0 w 0 0 0 0 0 0 0 0 0 w 0 t 0 b 0 X),
-            ~w(X w 0 t 0 t 0 w 0 0 0 0 0 0 0 0 0 0 0 0 0 w 0 t 0 X),
-            ~w(X 0 0 w 0 w 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 w 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
-            ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
-          ]
-        }
-      ]
+      @levels System.get_env("LEVELS") ||
+                [
+                  %{
+                    brick_length: 3,
+                    message: "year in review message 1",
+                    grid: [
+                      ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 r 0 0 X),
+                      ~w(X b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 b 0 0 X),
+                      ~w(X g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 g 0 0 X),
+                      ~w(X o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 o 0 0 X),
+                      ~w(X p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 X),
+                      ~w(X y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
+                    ]
+                  },
+                  %{
+                    brick_length: 3,
+                    message: "year in review message 2",
+                    grid: [
+                      ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X r 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X b 0 0 b 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X g 0 0 g 0 0 g 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X o 0 0 o 0 0 o 0 0 o 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X p 0 0 p 0 0 p 0 0 p 0 0 p 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 y 0 0 0 0 0 0 0 0 X),
+                      ~w(X t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 t 0 0 0 0 0 X),
+                      ~w(X w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 w 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
+                    ]
+                  },
+                  %{
+                    brick_length: 2,
+                    message: "year in review message 3",
+                    grid: [
+                      ~w(X X X X X X X X X X X X X X X X X X X X X X X X X X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 p 0 p 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 p 0 b 0 b 0 p 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 p 0 b 0 b 0 b 0 b 0 p 0 0 0 0 0 X),
+                      ~w(X p 0 0 0 0 0 p 0 b 0 b 0 t 0 t 0 b 0 b 0 p 0 0 0 X),
+                      ~w(X b 0 p 0 p 0 b 0 b 0 t 0 w 0 w 0 t 0 b 0 b 0 p 0 X),
+                      ~w(X b 0 b 0 b 0 b 0 t 0 w 0 0 0 0 0 w 0 t 0 b 0 b 0 X),
+                      ~w(X t 0 b 0 b 0 t 0 w 0 0 0 0 0 0 0 0 0 w 0 t 0 b 0 X),
+                      ~w(X w 0 t 0 t 0 w 0 0 0 0 0 0 0 0 0 0 0 0 0 w 0 t 0 X),
+                      ~w(X 0 0 w 0 w 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 w 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(X 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 X),
+                      ~w(D D D D D D D D D D D D D D D D D D D D D D D D D D)
+                    ]
+                  }
+                ]
 
       @levels_no length(@levels)
 
@@ -198,6 +204,9 @@ defmodule BreakoutexWeb.Live.Config do
           tick: @tick,
           level: 0,
           lost_lives: 0,
+          score: 0,
+          player_name: "",
+          multiplier: @starting_multiplier,
           secret_message: Enum.at(@levels, 0) |> Map.get(:message),
           # Basic unit for measuring blocks size
           unit: @unit,

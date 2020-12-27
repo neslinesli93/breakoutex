@@ -33,7 +33,9 @@
 }
 
 .info-container,
-.game-container {
+.game-container,
+.score-container
+{
   position: relative;
   /* Subtract half of the board width*/
   left: calc(50% - 260px);
@@ -43,12 +45,20 @@
   padding-bottom: 1.5rem;
 }
 
-.info-container .separator {
+.score-container {
+  margin-top: 45rem;
+}
+
+.info-container, .score-container .separator {
   margin: 0 0.5rem;
 }
 
 .info-container .score {
   font-size: 14px;
+}
+
+.score-container .points {
+  color: white;
 }
 
 .help-container {
@@ -116,3 +126,4 @@
     visibility: hidden;
   }
 }
+

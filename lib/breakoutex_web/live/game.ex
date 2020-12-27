@@ -123,7 +123,10 @@ defmodule BreakoutexWeb.Live.Game do
 
   # Compute the closest point of intersection, if any, between the ball and obstacles (bricks and paddle)
   @spec check_collision(Socket.t()) :: Socket.t()
-  defp check_collision(%{assigns: %{bricks: bricks, ball: ball, paddle: paddle, unit: unit}} = socket) do
+  defp check_collision(
+         %{assigns: %{bricks: bricks, ball: ball, paddle: paddle, unit: unit, score: score, multiplier: multiplier}} =
+           socket
+       ) do
     [paddle | bricks]
     |> Enum.filter(& &1.visible)
     |> Enum.reduce(nil, fn block, acc ->
@@ -144,8 +147,8 @@ defmodule BreakoutexWeb.Live.Game do
 
       # Match the paddle
       %{block: %{type: :paddle}, point: %{direction: :top} = point} ->
-        assign(
-          socket,
+        socket
+        |> assign(
           :ball,
           %{
             ball
@@ -155,11 +158,18 @@ defmodule BreakoutexWeb.Live.Game do
               dy: -ball.dy
           }
         )
+        |> assign(:multiplier, @starting_multiplier)
 
       # Match every other brick OR the paddle from the sides
       %{block: block, point: point} ->
+        new_bricks = hide_brick(bricks, block.id)
+        hit_bricks = count_hidden_bricks(new_bricks) - count_hidden_bricks(bricks)
+        %{multiplier: new_multiplier, score: new_score} = handle_hit_bricks(hit_bricks, score, multiplier)
+
         socket
-        |> assign(:bricks, hide_brick(bricks, block.id))
+        |> assign(:bricks, new_bricks)
+        |> assign(:score, new_score)
+        |> assign(:multiplier, new_multiplier)
         |> assign(
           :ball,
           %{
@@ -171,6 +181,25 @@ defmodule BreakoutexWeb.Live.Game do
           }
         )
     end
+  end
+
+  defp handle_hit_bricks(0, score, multiplier) do
+    %{score: score, multiplier: multiplier}
+  end
+
+  defp handle_hit_bricks(hits, score, multiplier) do
+    handle_hit_bricks(hits - 1, add_to_score(score, multiplier), multiplier + 1)
+  end
+
+  @spec count_hidden_bricks([paddle() | brick()]) :: Integer.t()
+  defp count_hidden_bricks(blocks) do
+    Enum.reduce(blocks, 0, fn
+      %{visible: false, type: :brick}, acc ->
+        acc + 1
+
+      _, acc ->
+        acc
+    end)
   end
 
   @spec maybe_build_closest(
@@ -199,9 +228,17 @@ defmodule BreakoutexWeb.Live.Game do
   @spec hide_brick([paddle() | brick()], String.t()) :: [paddle() | brick()]
   defp hide_brick(blocks, id) do
     Enum.map(blocks, fn
-      %{id: ^id, type: :brick} = block -> %{block | visible: false}
-      b -> b
+      %{id: ^id, type: :brick} = block ->
+        %{block | visible: false}
+
+      b ->
+        b
     end)
+  end
+
+  @spec add_to_score(Integer.t(), Integer.t()) :: Integer.t()
+  defp add_to_score(score, multiplier) do
+    score + @points_for_brick * multiplier
   end
 
   @spec collision_direction_x(number(), Engine.direction()) :: number()
@@ -219,13 +256,15 @@ defmodule BreakoutexWeb.Live.Game do
   end
 
   @spec check_lost(Socket.t()) :: Socket.t()
-  defp check_lost(%{assigns: %{ball: ball, unit: unit, lost_lives: lost_lives}} = socket) do
+  defp check_lost(%{assigns: %{ball: ball, unit: unit, lost_lives: lost_lives, score: score}} = socket) do
     if ball.y + ball.dy + ball.radius >= @board_rows * unit do
       socket
       |> assign(:game_state, :wait)
       |> assign(:paddle, initial_paddle_state())
       |> assign(:ball, initial_ball_state())
       |> assign(:lost_lives, lost_lives + 1)
+      |> assign(:score, score - @points_subtracted_on_lost_life)
+      |> assign(:multiplier, @starting_multiplier)
     else
       socket
     end
@@ -242,6 +281,7 @@ defmodule BreakoutexWeb.Live.Game do
         |> assign(:level, level + 1)
         |> assign(:secret_message, Enum.at(@levels, level + 1) |> Map.get(:message))
         |> next_level()
+
       _ ->
         socket
     end
@@ -266,6 +306,36 @@ defmodule BreakoutexWeb.Live.Game do
 
   # Handle keydown events
   @spec on_input(Socket.t(), String.t()) :: Socket.t()
+  defp on_input(%{assigns: %{game_state: :name}} = socket, key) do
+    cond do
+      String.match?(key, ~r/\A\p{L}\p{M}*\z/u) ->
+        socket
+        |> assign(:player_name, socket.assigns.player_name <> key)
+
+      key in @backspace ->
+        name =
+          if String.length(socket.assigns.player_name) > 0 do
+            socket.assigns.player_name
+            |> String.reverse()
+            |> String.graphemes()
+            |> tl()
+            |> List.to_string()
+            |> String.reverse()
+          else
+            socket.assigns.player_name
+          end
+
+        socket
+        |> assign(:player_name, name)
+
+      key in @return ->
+        start_game(socket)
+
+      true ->
+        socket
+    end
+  end
+
   defp on_input(socket, @space_key), do: start_game(socket)
 
   defp on_input(%{assigns: %{game_state: :playing}} = socket, key)
@@ -292,6 +362,10 @@ defmodule BreakoutexWeb.Live.Game do
 
   @spec start_game(Socket.t()) :: Socket.t()
   defp start_game(%{assigns: %{game_state: :welcome}} = socket) do
+    assign(socket, :game_state, :name)
+  end
+
+  defp start_game(%{assigns: %{game_state: :name}} = socket) do
     assign(socket, :game_state, :wait)
   end
 
