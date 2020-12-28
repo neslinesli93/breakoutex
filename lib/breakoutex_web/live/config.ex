@@ -48,7 +48,7 @@ defmodule BreakoutexWeb.Live.Config do
       @board_rows 21
       @board_cols 26
 
-      @points_subtracted_on_lost_life 250
+      @points_subtracted_on_lost_life 100
       @starting_multiplier 1
       @points_for_brick 20
 
@@ -205,6 +205,7 @@ defmodule BreakoutexWeb.Live.Config do
           level: 0,
           lost_lives: 0,
           score: 0,
+          user_id: "user#" <> Integer.to_string(System.os_time(:second)),
           player_name: "",
           multiplier: @starting_multiplier,
           secret_message: Enum.at(@levels, 0) |> Map.get(:message),

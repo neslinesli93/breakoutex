@@ -34,11 +34,24 @@
 
 .info-container,
 .game-container,
-.score-container
+.score-container,
+.online-container
 {
   position: relative;
   /* Subtract half of the board width*/
   left: calc(50% - 260px);
+}
+
+.online-container .me {
+  text-decoration: underline;
+}
+
+.online-container {
+  font-size:  x-small;
+}
+
+.online-container {
+  padding-top: 1.5rem;
 }
 
 .info-container {

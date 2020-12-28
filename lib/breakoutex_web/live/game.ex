@@ -9,6 +9,10 @@ defmodule BreakoutexWeb.Live.Game do
 
   alias Phoenix.LiveView.Socket
   alias BreakoutexWeb.Live.{Blocks, Engine}
+  alias BreakoutexWeb.Presence
+  alias Breakoutex.PubSub
+
+  @presence "breakout:presence"
 
   @type intersection_point :: %{
           block: paddle() | brick(),
@@ -22,11 +26,26 @@ defmodule BreakoutexWeb.Live.Game do
 
   @spec mount(map() | :not_mounted_at_router, map(), Socket.t()) :: {:ok, Socket.t()}
   def mount(_params, _session, socket) do
-    state = initial_state()
+    current_user_id = Map.get(socket.assigns, :current_user_id, "user_" <> Integer.to_string(System.os_time(:second)))
 
+    if connected?(socket) do
+      {:ok, _} = Presence.track(self(), @presence, current_user_id , %{
+        name: "No name yet",
+        joined_at: :os.system_time(:seconds),
+        level: 1,
+        points: 0
+      })
+
+      Phoenix.PubSub.subscribe(PubSub, @presence)
+    end
+
+    state = initial_state()
     socket =
       socket
       |> assign(state)
+      |> assign(:current_user_id, current_user_id)
+      |> assign(:users, %{})
+      |> handle_joins(Presence.list(@presence))
       |> assign(:blocks, Blocks.build_board(state.level, state.unit, state.unit))
       |> assign(:bricks, Blocks.build_bricks(state.level, state.unit, state.unit))
 
@@ -45,6 +64,15 @@ defmodule BreakoutexWeb.Live.Game do
       |> schedule_tick()
 
     {:noreply, new_socket}
+  end
+
+  def handle_info(%Phoenix.Socket.Broadcast{event: "presence_diff", payload: diff}, socket) do
+    {
+      :noreply,
+      socket
+      |> handle_leaves(diff.leaves)
+      |> handle_joins(diff.joins)
+    }
   end
 
   @spec handle_event(String.t(), map(), Socket.t()) :: {:noreply, Socket.t()}
@@ -168,7 +196,7 @@ defmodule BreakoutexWeb.Live.Game do
 
         socket
         |> assign(:bricks, new_bricks)
-        |> assign(:score, new_score)
+        |> update_player_points(new_score)
         |> assign(:multiplier, new_multiplier)
         |> assign(
           :ball,
@@ -263,7 +291,7 @@ defmodule BreakoutexWeb.Live.Game do
       |> assign(:paddle, initial_paddle_state())
       |> assign(:ball, initial_ball_state())
       |> assign(:lost_lives, lost_lives + 1)
-      |> assign(:score, score - @points_subtracted_on_lost_life)
+      |> update_player_points(score - @points_subtracted_on_lost_life)
       |> assign(:multiplier, @starting_multiplier)
     else
       socket
@@ -278,7 +306,7 @@ defmodule BreakoutexWeb.Live.Game do
     |> case do
       0 ->
         socket
-        |> assign(:level, level + 1)
+        |> update_player_level(level + 1)
         |> assign(:secret_message, Enum.at(@levels, level + 1) |> Map.get(:message))
         |> next_level()
 
@@ -300,7 +328,7 @@ defmodule BreakoutexWeb.Live.Game do
   defp next_level(%{assigns: %{ball: ball}} = socket) do
     socket
     |> assign(:game_state, :finish)
-    |> assign(:level, @levels_no - 1)
+    |> update_player_level(@levels_no - 1)
     |> assign(:ball, %{ball | dx: 0, dy: 0})
   end
 
@@ -329,7 +357,8 @@ defmodule BreakoutexWeb.Live.Game do
         |> assign(:player_name, name)
 
       key in @return ->
-        start_game(socket)
+        update_player_name(socket)
+        |> start_game
 
       true ->
         socket
@@ -359,6 +388,23 @@ defmodule BreakoutexWeb.Live.Game do
        do: stop_paddle(socket, :right)
 
   defp on_stop_input(socket, _), do: socket
+
+  defp update_player_name(%{assigns: %{users: users, current_user_id: current_user_id, player_name: player_name}} = socket) do
+    Presence.update(self(), @presence, current_user_id, Map.put(users[current_user_id], :name, player_name))
+    socket
+  end
+
+  defp update_player_level(%{assigns: %{users: users, current_user_id: current_user_id}} = socket, new_level) do
+    Presence.update(self(), @presence, current_user_id, Map.put(users[current_user_id], :level, new_level))
+    socket
+    |> assign(:level, new_level + 1)
+  end
+
+  defp update_player_points(%{assigns: %{users: users, current_user_id: current_user_id}} = socket, new_points) do
+    Presence.update(self(), @presence, current_user_id, Map.put(users[current_user_id], :points, new_points))
+    socket
+    |> assign(:score, new_points)
+  end
 
   @spec start_game(Socket.t()) :: Socket.t()
   defp start_game(%{assigns: %{game_state: :welcome}} = socket) do
@@ -402,4 +448,16 @@ defmodule BreakoutexWeb.Live.Game do
   @spec starting_dx() :: number()
   defp starting_dx,
     do: @starting_angles |> Enum.random() |> :math.cos() |> Kernel.*(@ball_speed)
+
+  defp handle_joins(socket, joins) do
+    Enum.reduce(joins, socket, fn {user, %{metas: [meta| _]}}, socket ->
+      assign(socket, :users, Map.put(socket.assigns.users, user, meta))
+    end)
+  end
+
+  defp handle_leaves(socket, leaves) do
+    Enum.reduce(leaves, socket, fn {user, _}, socket ->
+      assign(socket, :users, Map.delete(socket.assigns.users, user))
+    end)
+  end
 end

@@ -27,6 +27,21 @@ defmodule BreakoutexWeb do
     end
   end
 
+  def live_view do
+    quote do
+      use Phoenix.LiveView,
+        layout: {MissionControlWeb.LayoutView, "live.html"}
+      unquote(view_helpers())
+    end
+  end
+
+  def live_component do
+    quote do
+      use Phoenix.LiveComponent
+      unquote(view_helpers())
+    end
+  end
+
   def view do
     quote do
       use Phoenix.View,
@@ -44,6 +59,8 @@ defmodule BreakoutexWeb do
       alias BreakoutexWeb.Router.Helpers, as: Routes
 
       import Phoenix.LiveView
+      import Phoenix.LiveView.Helpers
+      alias BreakoutexWeb.Components.ActiveUsers
     end
   end
 
@@ -61,6 +78,16 @@ defmodule BreakoutexWeb do
     quote do
       use Phoenix.Channel
       import BreakoutexWeb.Gettext
+    end
+  end
+
+  defp view_helpers do
+    quote do
+      # Use all HTML functionality (forms, tags, etc)
+      use Phoenix.HTML
+
+      # Import LiveView helpers (live_render, live_component, live_patch, etc)
+      import Phoenix.LiveView.Helpers
     end
   end
 

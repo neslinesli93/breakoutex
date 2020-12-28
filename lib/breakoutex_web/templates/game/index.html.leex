@@ -22,6 +22,7 @@
         </p>
     </div>
     <% end %>
+
     <%= if @game_state == :name do %>
     <div class="name-container">
         <p>
@@ -105,5 +106,12 @@
             <span class="points">Score: <%= @score %></span>
         </div>
     </div>
+    <% end %>
+
+    <%= if !@game_state in [:welcome, :name] do %>
+        <div class="online-container">
+            <hr class="solid" style="width: 520px;">
+            <%= live_component @socket, ActiveUsers, current_user_id: @current_user_id, users: @users %>
+        </div>
     <% end %>
 </div>
